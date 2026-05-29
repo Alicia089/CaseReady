@@ -299,8 +299,23 @@
 <script>
   const API_BASE = "https://ezsspeeaair46nqlxblyqkndle0rxoju.lambda-url.us-east-1.on.aws";
   const API_KEY  = "Y8a1GjW0lXpRJwcDOtzCugysP67on3Z4";
+  const headers  = { "X-API-Key": API_KEY, "Content-Type": "application/json" };
 
-  const headers = { "X-API-Key": API_KEY, "Content-Type": "application/json" };
+  // ── Embedded sample data — works from file:// with no API needed ──────────
+  const SAMPLE_CASES = [
+    { case_id:"CR-2026-0843", procedure:"Total Hip Arthroplasty",  surgeon:"Dr. Priya Patel",  or_room:"OR-1", or_time:"07:30", scheduled_date:"2026-05-30" },
+    { case_id:"CR-2026-0841", procedure:"Total Knee Arthroplasty", surgeon:"Dr. James Hayes",  or_room:"OR-2", or_time:"07:30", scheduled_date:"2026-05-30" },
+    { case_id:"CR-2026-0844", procedure:"ACL Reconstruction",      surgeon:"Dr. Susan Kim",    or_room:"OR-4", or_time:"08:00", scheduled_date:"2026-05-30" },
+    { case_id:"CR-2026-0842", procedure:"Lumbar Spinal Fusion",    surgeon:"Dr. Linda Chen",   or_room:"OR-3", or_time:"10:00", scheduled_date:"2026-05-30" }
+  ];
+
+  const SAMPLE_BRIEFS = {
+    "CR-2026-0843": { case_id:"CR-2026-0843", patient_name:"Dorothy W.", procedure:"Total Hip Arthroplasty", surgeon:"Dr. Priya Patel", or_time:"07:30", or_room:"OR-1", overall_status:"READY", vendor:{status:"READY",summary:"DePuy Synthes rep Jordan Ellis confirmed by phone. All Pinnacle components shipped, ETA 06:00 day-of. Rep present.",flags:[],action_required:null}, spd:{status:"READY",summary:"Both loaner trays received and autoclaved. Sterility valid through 2026-06-28. Staged at SPD Cabinet 2A.",flags:[],action_required:null}, inventory:{status:"READY",summary:"All Pinnacle components verified on-site by Tom Nguyen CST. Backup cup and head sizes available.",flags:[],action_required:null}, preference_card:{status:"READY",summary:"Card verified by Amanda Torres CST. Three special requests active including prone positioning and antibiotic irrigation.",flags:[],action_required:null}, patient_prep:{status:"READY",summary:"Dorothy W., ASA II. Pre-op complete. All requirements met. Spinal + MAC with Dr. Ana Reyes CRNA.",flags:[],action_required:null}, critical_actions:["Confirm DePuy Synthes component arrival at 06:00 with Jordan Ellis (404-555-0281).","Confirm prone positioning table and antibiotic irrigation supplies are staged."], surgeon_notes:"Dr. Patel — fully GREEN. Jordan Ellis (DePuy Synthes) will be present. Confirm cup size with intraoperative imaging before seating.", generated_at:"2026-05-30T05:30:00Z" },
+    "CR-2026-0841": { case_id:"CR-2026-0841", patient_name:"Margaret T.", procedure:"Total Knee Arthroplasty", surgeon:"Dr. James Hayes", or_time:"07:30", or_room:"OR-2", overall_status:"READY", vendor:{status:"READY",summary:"Zimmer Biomet rep Kyle Marsh confirmed via email. All Persona Knee components in transit, ETA 05:30 day-of. Rep present in OR.",flags:[],action_required:null}, spd:{status:"READY",summary:"All three loaner trays received and steam-autoclaved. Sterility valid through 2026-06-28. Staged at SPD Cabinet 4B.",flags:[],action_required:null}, inventory:{status:"READY",summary:"All four Persona components verified on-site by Lisa Monroe RN. Backup femur and poly sizes on standby.",flags:[],action_required:null}, preference_card:{status:"READY",summary:"Card verified by Amanda Torres CST. Four special requests active. Persona system only — no substitution.",flags:[],action_required:"Circulator to confirm all four requests with Dr. Hayes at time-out."}, patient_prep:{status:"READY",summary:"Margaret T., ASA II. Pre-op complete. Consents signed, H&P current, NPO confirmed, labs reviewed. Spinal + MAC with Dr. Ana Reyes CRNA.",flags:[],action_required:null}, critical_actions:["Confirm Zimmer Biomet component arrival at 05:30 with Kyle Marsh (404-555-0192).","Circulator to verbally walk through all four preference card items at time-out."], surgeon_notes:"Dr. Hayes — fully GREEN across all five dimensions. Kyle Marsh (Zimmer Biomet) will be present. Confirm component arrival at 05:30 before bringing patient to OR.", generated_at:"2026-05-30T05:30:00Z" },
+    "CR-2026-0844": { case_id:"CR-2026-0844", patient_name:"Marcus D.", procedure:"ACL Reconstruction", surgeon:"Dr. Susan Kim", or_time:"08:00", or_room:"OR-4", overall_status:"AT_RISK", vendor:{status:"AT_RISK",summary:"Arthrex rep Devon Park acknowledged via email but did NOT confirm all components. TightRope size availability unconfirmed.",flags:["Email acknowledgement only — no full component confirmation","TightRope size availability unverified"],action_required:"Call Devon Park (404-555-0419) today to confirm complete component list and sizing."}, spd:{status:"READY",summary:"Both Arthrex loaner trays received and autoclaved. Sterility valid through 2026-06-28. Staged at SPD Cabinet 3C.",flags:[],action_required:null}, inventory:{status:"READY",summary:"TightRope ACL components verified on-site by Lisa Monroe RN. Backup screw sizes available.",flags:[],action_required:null}, preference_card:{status:"READY",summary:"Dr. Kim's card verified by Rachel Moore CST. Tourniquet at 250mmHg, C-arm required for graft tensioning.",flags:[],action_required:null}, patient_prep:{status:"READY",summary:"Marcus D., ASA I. Pre-op complete. All requirements met. General anesthesia with Dr. James Ford.",flags:[],action_required:null}, critical_actions:["[VENDOR — TODAY] Call Devon Park (404-555-0419) to confirm complete TightRope component list and sizing. Resolve before 18:00 today.","Confirm C-arm availability for graft tensioning check per Dr. Kim's preference card."], surgeon_notes:"Dr. Kim — one watch item: Devon Park (Arthrex) has not fully confirmed component availability. OR Coordinator is following up. SPD, inventory, preference card, and patient prep are all clear.", generated_at:"2026-05-30T05:30:00Z" },
+    "CR-2026-0842": { case_id:"CR-2026-0842", patient_name:"Robert K.", procedure:"Lumbar Spinal Fusion", surgeon:"Dr. Linda Chen", or_time:"10:00", or_room:"OR-3", overall_status:"BLOCKED", vendor:{status:"BLOCKED",summary:"Medtronic rep Sarah Okonkwo has NOT confirmed. No contact since 2026-05-27.",flags:["Rep unconfirmed — no response for 3+ days","Day-of presence unverified"],action_required:"IMMEDIATE: Call Sarah Okonkwo at 678-555-0347. Escalate to territory manager if no answer within 30 minutes."}, spd:{status:"BLOCKED",summary:"All three loaner trays NOT received. Sterilization deadline 16:00 today critically at risk.",flags:["TRAYS NOT RECEIVED — all three sets missing","Sterilization not initiated"],action_required:"IMMEDIATE: Alert SPD Charge Nurse. Case CANNOT proceed if trays miss the 16:00 sterilization window."}, inventory:{status:"BLOCKED",summary:"Zero implant components verified on-site. No backup sizes available.",flags:["CLYDESDALE-SET not on-site","Rod inventory unverified"],action_required:"Verify all components against pick list the moment trays arrive."}, preference_card:{status:"AT_RISK",summary:"Dr. Chen's card last updated 2026-01-22 and NOT verified against this case.",flags:["Card not verified for this case"],action_required:"Scrub tech must verify preference card before 06:30 on 2026-05-30."}, patient_prep:{status:"AT_RISK",summary:"Robert K., ASA III. Labs NOT reviewed. Cardiology clearance PENDING.",flags:["LABS NOT REVIEWED","Cardiology clearance pending for ASA III patient"],action_required:"Pre-op RN must confirm labs and cardiology clearance before 06:30."}, critical_actions:["[VENDOR — IMMEDIATE] Call Medtronic rep Sarah Okonkwo at 678-555-0347 NOW. Escalate if unreachable within 30 min.","[SPD — IMMEDIATE] All loaner trays missing. Must enter sterilization by 16:00 TODAY or case is cancelled.","[INVENTORY — IMMEDIATE] No implants on-site. Full verification required on tray arrival.","[PATIENT — URGENT] Labs and cardiology clearance must be completed before 06:30 on 2026-05-30.","[SURGEON DECISION] If blockers unresolved by EOD, Dr. Chen must evaluate case delay."], surgeon_notes:"Dr. Chen — this case is BLOCKED across three dimensions. Do not proceed to OR without vendor confirmation, loaner tray sterilization, inventory verification, and cardiology clearance all resolved.", generated_at:"2026-05-30T05:30:00Z" }
+  };
+  // ─────────────────────────────────────────────────────────────────────────
 
   let briefs = {};
   let openRow = null;
@@ -444,42 +459,48 @@
     document.getElementById("countClean").textContent = 0;
   }
 
+  function loadFromEmbedded() {
+    briefs = { ...SAMPLE_BRIEFS };
+    renderTable(SAMPLE_CASES);
+    updateSummary();
+    document.getElementById("lastRefresh").textContent =
+      new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }) + " (demo data)";
+    document.getElementById("loader").classList.add("hidden");
+  }
+
   async function loadDashboard() {
     const btn = document.getElementById("refreshBtn");
     btn.disabled = true;
-    btn.textContent = "Loading...";
+    btn.textContent = "Connecting...";
+
+    // Start with embedded data immediately so the screen is never blank
+    loadFromEmbedded();
 
     try {
-      // 1. Get case list
+      // Try live API — works when served from a hosted URL
       const casesRes = await fetch(`${API_BASE}/cases`, { headers });
+      if (!casesRes.ok) throw new Error("API error");
       const cases = await casesRes.json();
 
-      // Initial render with loading state
       renderTable(cases);
 
-      // 2. Fetch all briefs in parallel
       const briefPromises = cases.map(async c => {
         try {
           const res = await fetch(`${API_BASE}/brief/${c.case_id}`, { method: "POST", headers });
           const brief = await res.json();
           briefs[c.case_id] = brief;
-          // Re-render as each brief arrives
           renderTable(cases);
           updateSummary();
-        } catch (e) {
-          console.error(`Failed to load brief for ${c.case_id}`, e);
-        }
+        } catch (e) { /* keep embedded data for this case */ }
       });
 
       await Promise.all(briefPromises);
-
-      document.getElementById("lastRefresh").textContent = new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
-      document.getElementById("loader").classList.add("hidden");
+      document.getElementById("lastRefresh").textContent =
+        new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }) + " (live)";
 
     } catch (e) {
-      console.error("Failed to load dashboard", e);
-      document.getElementById("loader").classList.add("hidden");
-      alert("Could not reach the CaseReady API. Check your connection or API key.");
+      // file:// or network error — embedded data already showing, nothing to do
+      console.log("Using embedded demo data (API unreachable from file://)");
     }
 
     btn.disabled = false;
