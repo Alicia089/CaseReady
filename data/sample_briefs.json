@@ -1,119 +1,42 @@
 {
   "CR-2026-0841": {
-    "case_id": "CR-2026-0841",
-    "patient_name": "Margaret T.",
-    "procedure": "Total Knee Arthroplasty (Zimmer Biomet Persona Knee System)",
-    "surgeon": "Dr. James Hayes",
-    "or_time": "07:30",
-    "or_room": "OR-2",
-    "overall_status": "READY",
-    "vendor": {
-      "status": "READY",
-      "summary": "Zimmer Biomet rep Kyle Marsh confirmed via email on 2026-05-28 at 14:32. All components confirmed in transit with a day-of ETA of 05:30. Rep will be physically present in the OR.",
-      "flags": [],
-      "action_required": null
-    },
-    "spd": {
-      "status": "READY",
-      "summary": "All three loaner trays (ZB-PERSONA-F5, ZB-PERSONA-T4, ZB-TRIALS) received 2026-05-28 at 11:15, steam-autoclaved by Central Sterile Unit B at 16:45. Sterility valid through 2026-06-28. Trays staged at SPD Cabinet 4B.",
-      "flags": [],
-      "action_required": null
-    },
-    "inventory": {
-      "status": "READY",
-      "summary": "All four required implant components verified on-site by Lisa Monroe, RN at 17:00 on 2026-05-28: Femur Size 5, Tibia Size 4, 10mm Poly Insert, 35mm Patellar Button. Backup sizes (Femur 4 & 6, Poly 9mm & 12mm) available on standby.",
-      "flags": [],
-      "action_required": null
-    },
-    "preference_card": {
-      "status": "READY",
-      "summary": "Dr. Hayes' preference card verified by Amanda Torres, CST. Four active special requests confirmed. Critical implant note: Persona system ONLY — no substitution without direct surgeon authorization.",
-      "flags": [
-        "Preference card last updated 2026-03-10 — confirm with Dr. Hayes if any preferences have changed since March."
-      ],
-      "action_required": "Circulator to verbally confirm all four special requests with Dr. Hayes at time-out."
-    },
-    "patient_prep": {
-      "status": "READY",
-      "summary": "Margaret T., ASA Class II. All pre-op requirements satisfied: consents signed, H&P within 30 days, NPO confirmed, labs reviewed, imaging available. No allergies flagged. Anesthesia: Spinal + MAC, Dr. Ana Reyes CRNA.",
-      "flags": [],
-      "action_required": null
-    },
-    "critical_actions": [
-      "VERIFY VENDOR ARRIVAL: Kyle Marsh (Zimmer Biomet, 404-555-0192) ETA 05:30 day-of — confirm physical arrival before patient transport to OR.",
-      "CONFIRM OR ROOM: Verify room assignment with charge nurse and communicate to all team members.",
-      "TIME-OUT CHECKLIST: Circulator to walk through all four surgeon special requests with Dr. Hayes prior to incision.",
-      "IMPLANT LOCK: Do NOT substitute Persona system components without explicit verbal authorization from Dr. Hayes.",
-      "RETRIEVE TRAYS: Pull ZB-PERSONA-F5, ZB-PERSONA-T4, and ZB-TRIALS from SPD Cabinet 4B — confirm sterility seal integrity at transport."
-    ],
-    "surgeon_notes": "Dr. Hayes — your case is fully GREEN across all five dimensions. Four preference card items to confirm at time-out: (1) Large-bore suction at incision, (2) Tourniquet at 300 mmHg, (3) Pulse lavage before cementing, (4) Coban wrap post-closure. Kyle Marsh from Zimmer Biomet will be present. Patient Margaret T. is fully prepped with zero outstanding flags.",
-    "generated_at": "2026-05-29T18:00:00Z"
+    "case_id": "CR-2026-0841", "patient_name": "Margaret T.", "procedure": "Total Knee Arthroplasty", "surgeon": "Dr. James Hayes", "or_time": "07:30", "or_room": "OR-2", "overall_status": "READY",
+    "vendor": { "status": "READY", "summary": "Zimmer Biomet rep Kyle Marsh confirmed via email 2026-05-28. All Persona Knee components in transit, ETA 05:30 day-of. Rep present in OR.", "flags": [], "action_required": null },
+    "spd": { "status": "READY", "summary": "All three loaner trays received and steam-autoclaved 2026-05-28. Sterility valid through 2026-06-28. Staged at SPD Cabinet 4B.", "flags": [], "action_required": null },
+    "inventory": { "status": "READY", "summary": "All four Persona components verified on-site by Lisa Monroe RN. Backup femur and poly sizes on standby.", "flags": [], "action_required": null },
+    "preference_card": { "status": "READY", "summary": "Card verified by Amanda Torres CST. Four special requests active. Persona system only — no substitution.", "flags": [], "action_required": "Circulator to confirm all four requests with Dr. Hayes at time-out." },
+    "patient_prep": { "status": "READY", "summary": "Margaret T., ASA II. Pre-op complete. Consents signed, H&P current, NPO confirmed, labs reviewed. Spinal + MAC with Dr. Ana Reyes CRNA.", "flags": [], "action_required": null },
+    "critical_actions": ["Confirm Zimmer Biomet component arrival at 05:30 with Kyle Marsh (404-555-0192) before patient transport.", "Circulator to verbally walk through all four preference card items at time-out."],
+    "surgeon_notes": "Dr. Hayes — fully GREEN across all five dimensions. Kyle Marsh (Zimmer Biomet) will be present. Confirm component arrival at 05:30 before bringing patient to OR.", "generated_at": "2026-05-29T18:00:00Z"
   },
   "CR-2026-0842": {
-    "case_id": "CR-2026-0842",
-    "patient_name": "Robert K.",
-    "procedure": "Lumbar Spinal Fusion (PEEK CLYDESDALE Spacer + CD Horizon Solera Instrumentation)",
-    "surgeon": "Dr. Linda Chen",
-    "or_time": "10:00",
-    "or_room": "OR-3",
-    "overall_status": "BLOCKED",
-    "vendor": {
-      "status": "BLOCKED",
-      "summary": "Medtronic rep Sarah Okonkwo has NOT confirmed. Zero contact response since 2026-05-27. Day-of presence is unknown.",
-      "flags": [
-        "Rep unconfirmed — no response to last contact attempt (2026-05-27)",
-        "Day-of presence unverified",
-        "No confirmation timestamp on record"
-      ],
-      "action_required": "IMMEDIATE: Call Sarah Okonkwo at 678-555-0347. If no answer within 30 minutes, escalate to Medtronic territory manager. Vendor confirmation must be secured before 16:00 today."
-    },
-    "spd": {
-      "status": "BLOCKED",
-      "summary": "All three loaner trays (MDT-CLYDESDALE-SET, MDT-SOLERA-SCREW, MDT-SOLERA-ROD) have NOT been received by Central Sterile Unit A. Sterilization has not started. Drop-off deadline is 16:00 today for a 07:00 OR start tomorrow.",
-      "flags": [
-        "TRAYS NOT RECEIVED — all three loaner sets missing",
-        "Sterilization not initiated",
-        "Drop-off deadline of 2026-05-29 16:00 is critically at risk"
-      ],
-      "action_required": "IMMEDIATE: SPD Charge Nurse and OR Coordinator must be notified now. If trays cannot arrive and complete sterilization by 16:00, this case CANNOT proceed as scheduled."
-    },
-    "inventory": {
-      "status": "BLOCKED",
-      "summary": "Zero implant components verified on-site. CLYDESDALE cage set and rod inventory both unconfirmed. No backup sizes available.",
-      "flags": [
-        "MDT-CLYDESDALE-SET not confirmed on-site",
-        "Rod inventory (5.5mm titanium) unverified",
-        "No backup sizes available for any component"
-      ],
-      "action_required": "IMMEDIATE: OR Coordinator to physically verify all components against pick list upon tray arrival. Confirm backup sizing with Medtronic rep on first contact."
-    },
-    "preference_card": {
-      "status": "AT_RISK",
-      "summary": "Dr. Chen's preference card last updated 2026-01-22 and has NOT been verified against this case. No scrub tech has signed off.",
-      "flags": [
-        "Preference card not verified for this case",
-        "Card last updated 4+ months ago"
-      ],
-      "action_required": "Assigned scrub tech must verify Dr. Chen's preference card against this case before 06:30 on 2026-05-30."
-    },
-    "patient_prep": {
-      "status": "AT_RISK",
-      "summary": "Robert K. (ASA Class III) has completed pre-op and signed consents, but labs have NOT been reviewed and cardiology clearance is PENDING.",
-      "flags": [
-        "LABS NOT REVIEWED — required before anesthesia for ASA III patient",
-        "Cardiology clearance PENDING — must be obtained before case proceeds"
-      ],
-      "action_required": "Pre-op RN must confirm lab review today. Cardiology clearance must be received before 06:30 on 2026-05-30. Notify Dr. Marcus Webb (Anesthesia) of pending clearance immediately."
-    },
-    "critical_actions": [
-      "[VENDOR — IMMEDIATE] Call Medtronic rep Sarah Okonkwo at 678-555-0347 NOW. Escalate to territory manager if unreachable within 30 min. Owner: OR Coordinator.",
-      "[SPD — IMMEDIATE] All three loaner trays are not on-site. Must arrive and enter sterilization by 16:00 TODAY or the case cannot proceed. Owner: SPD Charge Nurse + OR Coordinator.",
-      "[INVENTORY — IMMEDIATE] No implant components verified. Physically check all items against pick list upon tray arrival. Owner: OR Coordinator + Medtronic Rep.",
-      "[PATIENT PREP — URGENT] Labs must be reviewed and cardiology clearance obtained before 06:30 on 2026-05-30. Notify anesthesia provider immediately. Owner: Pre-op RN.",
-      "[PREFERENCE CARD — URGENT] Scrub tech must verify Dr. Chen's preference card before 06:30 on 2026-05-30.",
-      "[SURGEON DECISION] If vendor contact, tray delivery/sterilization, or cardiology clearance cannot be resolved by end of day, Dr. Chen and OR Director must evaluate case delay or reschedule."
-    ],
-    "surgeon_notes": "Dr. Chen — this case is BLOCKED across three dimensions. Do not proceed to OR on 2026-05-30 without: (1) Medtronic rep confirmed and loaner trays received + sterilized, (2) all implant components physically verified on-site, and (3) cardiology clearance documented for Robert K. The SPD sterilization deadline of 16:00 TODAY is the single most time-sensitive constraint. You will receive a status update by 17:00.",
-    "generated_at": "2026-05-29T18:00:00Z"
+    "case_id": "CR-2026-0842", "patient_name": "Robert K.", "procedure": "Lumbar Spinal Fusion", "surgeon": "Dr. Linda Chen", "or_time": "10:00", "or_room": "OR-3", "overall_status": "BLOCKED",
+    "vendor": { "status": "BLOCKED", "summary": "Medtronic rep Sarah Okonkwo has NOT confirmed. No contact since 2026-05-27.", "flags": ["Rep unconfirmed — no response for 3+ days", "Day-of presence unverified"], "action_required": "IMMEDIATE: Call Sarah Okonkwo at 678-555-0347. Escalate to territory manager if no answer within 30 minutes." },
+    "spd": { "status": "BLOCKED", "summary": "All three loaner trays NOT received. Sterilization deadline 16:00 today at risk.", "flags": ["TRAYS NOT RECEIVED — all three sets missing", "Sterilization not initiated"], "action_required": "IMMEDIATE: Alert SPD Charge Nurse. Case CANNOT proceed if trays miss the 16:00 sterilization window." },
+    "inventory": { "status": "BLOCKED", "summary": "Zero implant components verified on-site. No backup sizes available.", "flags": ["CLYDESDALE-SET not on-site", "Rod inventory unverified"], "action_required": "Verify all components against pick list the moment trays arrive." },
+    "preference_card": { "status": "AT_RISK", "summary": "Dr. Chen's card last updated 2026-01-22 and NOT verified against this case.", "flags": ["Card not verified for CR-2026-0842"], "action_required": "Scrub tech must verify preference card before 06:30 on 2026-05-30." },
+    "patient_prep": { "status": "AT_RISK", "summary": "Robert K., ASA III. Labs NOT reviewed. Cardiology clearance PENDING.", "flags": ["LABS NOT REVIEWED", "Cardiology clearance pending for ASA III patient"], "action_required": "Pre-op RN must confirm lab review and cardiology clearance before 06:30 on 2026-05-30." },
+    "critical_actions": ["[VENDOR — IMMEDIATE] Call Medtronic rep Sarah Okonkwo at 678-555-0347 NOW. Escalate if unreachable.", "[SPD — IMMEDIATE] All loaner trays missing. Must enter sterilization by 16:00 TODAY or case is cancelled.", "[INVENTORY — IMMEDIATE] No implants on-site. Full component verification required on tray arrival.", "[PATIENT — URGENT] Labs and cardiology clearance must be completed before 06:30 on 2026-05-30.", "[SURGEON DECISION] If blockers unresolved by EOD, Dr. Chen must evaluate case delay."],
+    "surgeon_notes": "Dr. Chen — this case is BLOCKED. Do not proceed without vendor confirmation, loaner tray sterilization, and cardiology clearance all resolved.", "generated_at": "2026-05-29T18:00:00Z"
+  },
+  "CR-2026-0843": {
+    "case_id": "CR-2026-0843", "patient_name": "Dorothy W.", "procedure": "Total Hip Arthroplasty", "surgeon": "Dr. Priya Patel", "or_time": "07:30", "or_room": "OR-1", "overall_status": "READY",
+    "vendor": { "status": "READY", "summary": "DePuy Synthes rep Jordan Ellis confirmed by phone 2026-05-28. All Pinnacle components shipped, ETA 06:00 day-of. Rep present.", "flags": [], "action_required": null },
+    "spd": { "status": "READY", "summary": "Both loaner trays received and autoclaved 2026-05-28. Sterility valid through 2026-06-28. Staged at SPD Cabinet 2A.", "flags": [], "action_required": null },
+    "inventory": { "status": "READY", "summary": "All Pinnacle components verified on-site by Tom Nguyen CST. Backup cup and head sizes available.", "flags": [], "action_required": null },
+    "preference_card": { "status": "READY", "summary": "Card verified by Amanda Torres CST. Three special requests active including prone positioning and antibiotic irrigation.", "flags": [], "action_required": null },
+    "patient_prep": { "status": "READY", "summary": "Dorothy W., ASA II. Pre-op complete. All requirements met. Spinal + MAC with Dr. Ana Reyes CRNA.", "flags": [], "action_required": null },
+    "critical_actions": ["Confirm DePuy Synthes component arrival at 06:00 with Jordan Ellis (404-555-0281) before patient transport.", "Confirm prone positioning table and antibiotic irrigation supplies are staged per Dr. Patel's preference card."],
+    "surgeon_notes": "Dr. Patel — fully GREEN. Jordan Ellis (DePuy Synthes) will be present. Confirm cup size with intraoperative imaging before seating.", "generated_at": "2026-05-29T18:00:00Z"
+  },
+  "CR-2026-0844": {
+    "case_id": "CR-2026-0844", "patient_name": "Marcus D.", "procedure": "ACL Reconstruction", "surgeon": "Dr. Susan Kim", "or_time": "08:00", "or_room": "OR-4", "overall_status": "AT_RISK",
+    "vendor": { "status": "AT_RISK", "summary": "Arthrex rep Devon Park acknowledged via email but did NOT confirm all components. TightRope size availability unconfirmed.", "flags": ["Email acknowledgement only — no full component confirmation", "TightRope size availability unverified"], "action_required": "Call Devon Park (404-555-0419) today to confirm complete component list and size availability before 18:00." },
+    "spd": { "status": "READY", "summary": "Both Arthrex loaner trays received and autoclaved 2026-05-28. Sterility valid through 2026-06-28. Staged at SPD Cabinet 3C.", "flags": [], "action_required": null },
+    "inventory": { "status": "READY", "summary": "TightRope ACL components verified on-site by Lisa Monroe RN. Backup screw sizes available.", "flags": [], "action_required": null },
+    "preference_card": { "status": "READY", "summary": "Dr. Kim's card verified by Rachel Moore CST. Tourniquet at 250mmHg, C-arm required for graft tensioning.", "flags": [], "action_required": null },
+    "patient_prep": { "status": "READY", "summary": "Marcus D., ASA I. Pre-op complete. All requirements met. General anesthesia with Dr. James Ford.", "flags": [], "action_required": null },
+    "critical_actions": ["[VENDOR — TODAY] Call Devon Park (404-555-0419) to confirm complete TightRope component list and sizing. Resolve before 18:00 today.", "Confirm C-arm availability for graft tensioning check per Dr. Kim's preference card."],
+    "surgeon_notes": "Dr. Kim — one watch item: Devon Park (Arthrex) has not fully confirmed component availability. OR Coordinator is following up. SPD, inventory, preference card, and patient prep are all clear.", "generated_at": "2026-05-29T18:00:00Z"
   }
 }

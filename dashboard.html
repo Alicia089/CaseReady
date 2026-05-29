@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CaseReady · OR Coordinator Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Martian+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #faf8f5;
+    --surface: #f3efe8;
+    --border: #e0d8cc;
+    --accent: #8a2535;
+    --accent2: #a8864a;
+    --muted: #b0a090;
+    --text: #1a1410;
+    --text-dim: #6b5d50;
+    --ready: #1a6b3c;
+    --ready-bg: #eaf7ef;
+    --ready-border: #a8dfc0;
+    --risk: #7a5500;
+    --risk-bg: #fff8e6;
+    --risk-border: #f0d080;
+    --blocked: #8a1515;
+    --blocked-bg: #fdeaea;
+    --blocked-border: #f0a0a0;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); font-family: 'Martian Mono', monospace; font-size: 12px; color: var(--text); min-height: 100vh; }
+
+  /* ── HEADER ── */
+  header {
+    background: #18110e;
+    padding: 0 40px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-left { display: flex; align-items: center; gap: 24px; }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-text { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 300; color: #f0e8dc; letter-spacing: 0.02em; }
+  .header-divider { width: 1px; height: 20px; background: #3a2a1e; }
+  .header-subtitle { font-size: 10px; letter-spacing: 0.15em; color: #7a6a5a; text-transform: uppercase; }
+  .header-right { display: flex; align-items: center; gap: 20px; }
+  .live-badge { display: flex; align-items: center; gap: 6px; font-size: 10px; letter-spacing: 0.12em; color: #5aaa70; text-transform: uppercase; }
+  .live-dot { width: 6px; height: 6px; background: #5aaa70; border-radius: 50%; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+  .header-time { font-size: 11px; color: #5a4a3a; letter-spacing: 0.08em; }
+
+  /* ── TOOLBAR ── */
+  .toolbar {
+    padding: 16px 40px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .toolbar-title { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300; color: var(--text); }
+  .toolbar-subtitle { font-size: 11px; color: var(--muted); margin-top: 2px; letter-spacing: 0.05em; }
+  .toolbar-right { display: flex; gap: 10px; align-items: center; }
+  .btn-refresh {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 7px 16px;
+    font-family: 'Martian Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-refresh:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-refresh:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* ── MAIN ── */
+  main { padding: 24px 40px 40px; }
+
+  /* ── SUMMARY BAR ── */
+  .summary-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .summary-card {
+    padding: 16px 20px;
+    border: 1px solid var(--border);
+    background: white;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: border-color 0.2s;
+  }
+  .summary-card.ready { border-left: 3px solid var(--ready); }
+  .summary-card.risk  { border-left: 3px solid #c8a000; }
+  .summary-card.blocked { border-left: 3px solid var(--blocked); }
+  .summary-card.clean { border-left: 3px solid #4a7aaa; }
+  .summary-num { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 300; line-height: 1; }
+  .summary-card.ready   .summary-num { color: var(--ready); }
+  .summary-card.risk    .summary-num { color: #c8a000; }
+  .summary-card.blocked .summary-num { color: var(--blocked); }
+  .summary-card.clean   .summary-num { color: #4a7aaa; }
+  .summary-label { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); line-height: 1.5; }
+
+  /* ── TABLE ── */
+  .table-wrap {
+    background: white;
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .table-header {
+    background: #18110e;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .table-header-title { font-size: 10px; letter-spacing: 0.15em; color: #a8864a; text-transform: uppercase; }
+  .table-header-date { font-size: 10px; color: #5a4a3a; letter-spacing: 0.08em; }
+
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    text-align: left;
+    padding: 10px 16px;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    font-weight: 400;
+  }
+  thead th.center { text-align: center; }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+    cursor: pointer;
+  }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--surface); }
+  tbody tr.row-ready   { border-left: 3px solid var(--ready); }
+  tbody tr.row-risk    { border-left: 3px solid #c8a000; }
+  tbody tr.row-blocked { border-left: 3px solid var(--blocked); }
+
+  td { padding: 14px 16px; vertical-align: middle; }
+  td.center { text-align: center; }
+
+  .or-room { font-size: 13px; font-weight: 500; color: var(--text); letter-spacing: 0.05em; }
+  .case-name { font-size: 13px; color: var(--text); margin-bottom: 3px; }
+  .case-surgeon { font-size: 10px; color: var(--text-dim); letter-spacing: 0.05em; }
+  .case-time { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+  .badge {
+    display: inline-block;
+    padding: 4px 12px;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .badge-ready   { background: var(--ready-bg); color: var(--ready); border: 1px solid var(--ready-border); }
+  .badge-risk    { background: var(--risk-bg); color: var(--risk); border: 1px solid var(--risk-border); }
+  .badge-blocked { background: var(--blocked-bg); color: var(--blocked); border: 1px solid var(--blocked-border); }
+  .badge-loading { background: var(--surface); color: var(--muted); border: 1px solid var(--border); }
+
+  .dim-icon { font-size: 16px; display: block; }
+  .dim-ready   { color: var(--ready); }
+  .dim-risk    { color: #c8a000; }
+  .dim-blocked { color: var(--blocked); }
+  .dim-loading { color: var(--muted); font-size: 12px; }
+
+  /* ── DETAIL PANEL ── */
+  .detail-row td { padding: 0; background: var(--surface); }
+  .detail-inner { padding: 20px 24px; display: none; }
+  .detail-inner.open { display: block; }
+  .detail-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 16px; }
+  .detail-card {
+    padding: 14px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 0;
+  }
+  .detail-card-title { font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .detail-card-status { font-size: 10px; font-weight: 500; margin-bottom: 6px; }
+  .detail-card-status.ready   { color: var(--ready); }
+  .detail-card-status.risk    { color: #c8a000; }
+  .detail-card-status.blocked { color: var(--blocked); }
+  .detail-card-summary { font-size: 10px; color: var(--text-dim); line-height: 1.7; }
+  .detail-card-action { font-size: 10px; color: var(--accent); margin-top: 8px; line-height: 1.6; border-top: 1px solid var(--border); padding-top: 8px; }
+
+  .detail-actions { margin-top: 4px; }
+  .detail-actions-title { font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .action-item { font-size: 11px; color: var(--text-dim); padding: 6px 0; border-bottom: 1px solid var(--border); line-height: 1.6; }
+  .action-item:last-child { border-bottom: none; }
+
+  .surgeon-note { margin-top: 12px; padding: 12px 16px; background: #18110e; font-size: 11px; color: #a89880; line-height: 1.8; }
+  .surgeon-note-label { font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: #5a4a3a; margin-bottom: 6px; }
+
+  /* ── LOADING STATE ── */
+  .loading-overlay {
+    position: fixed; inset: 0; background: rgba(250,248,245,0.9);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 200;
+  }
+  .loading-overlay.hidden { display: none; }
+  .loading-title { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300; color: var(--text); margin-bottom: 8px; }
+  .loading-sub { font-size: 10px; letter-spacing: 0.15em; color: var(--muted); text-transform: uppercase; }
+  .loading-bar { width: 200px; height: 1px; background: var(--border); margin-top: 24px; position: relative; overflow: hidden; }
+  .loading-bar::after { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: var(--accent); animation: load 1.5s ease infinite; }
+  @keyframes load { 0% { left: -100%; } 100% { left: 100%; } }
+
+  /* ── FOOTER ── */
+  footer { padding: 16px 40px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: white; }
+  .footer-copy { font-size: 10px; color: var(--muted); }
+  .footer-api  { font-size: 10px; color: var(--border); }
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loader">
+  <div class="loading-title">CaseReady</div>
+  <div class="loading-sub">Loading tomorrow's OR schedule...</div>
+  <div class="loading-bar"></div>
+</div>
+
+<header>
+  <div class="header-left">
+    <div class="logo">
+      <svg width="28" height="28" viewBox="0 0 80 80" fill="none">
+        <circle cx="40" cy="40" r="36" stroke="#8a2535" stroke-width="1" opacity="0.5"/>
+        <line x1="40" y1="12" x2="40" y2="68" stroke="#8a2535" stroke-width="0.8" opacity="0.6"/>
+        <line x1="12" y1="40" x2="68" y2="40" stroke="#8a2535" stroke-width="0.8" opacity="0.6"/>
+        <circle cx="40" cy="40" r="4" fill="#a8864a" opacity="0.8"/>
+      </svg>
+      <span class="logo-text">CaseReady</span>
+    </div>
+    <div class="header-divider"></div>
+    <span class="header-subtitle">Tomorrow's OR Readiness · 5:30 AM Auto-Briefing</span>
+  </div>
+  <div class="header-right">
+    <span class="live-badge"><span class="live-dot"></span> System Active</span>
+    <span class="header-time" id="clock"></span>
+  </div>
+</header>
+
+<div class="toolbar">
+  <div>
+    <div class="toolbar-title">Your coordinator's morning view.</div>
+    <div class="toolbar-subtitle">Green = go. Yellow = review. Red = act. No manual assembly required.</div>
+  </div>
+  <div class="toolbar-right">
+    <button class="btn-refresh" id="refreshBtn" onclick="loadDashboard()">Refresh Briefs</button>
+  </div>
+</div>
+
+<main>
+  <div class="summary-bar" id="summaryBar">
+    <div class="summary-card ready"><div class="summary-num" id="countReady">—</div><div class="summary-label">Fully<br>Ready</div></div>
+    <div class="summary-card risk"><div class="summary-num" id="countRisk">—</div><div class="summary-label">At<br>Risk</div></div>
+    <div class="summary-card blocked"><div class="summary-num" id="countBlocked">—</div><div class="summary-label">Action<br>Required</div></div>
+    <div class="summary-card clean"><div class="summary-num" id="countClean">0</div><div class="summary-label">Day-of<br>Surprises</div></div>
+  </div>
+
+  <div class="table-wrap">
+    <div class="table-header">
+      <span class="table-header-title">OR Schedule — <span id="scheduleDate"></span></span>
+      <span class="table-header-date">Last refreshed: <span id="lastRefresh">—</span></span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:70px">OR</th>
+          <th>Case / Surgeon</th>
+          <th style="width:120px">Status</th>
+          <th class="center" style="width:90px">Vendor</th>
+          <th class="center" style="width:90px">SPD Tray</th>
+          <th class="center" style="width:90px">Inventory</th>
+          <th class="center" style="width:90px">Pref Card</th>
+          <th class="center" style="width:90px">Patient</th>
+        </tr>
+      </thead>
+      <tbody id="caseTable"></tbody>
+    </table>
+  </div>
+</main>
+
+<footer>
+  <span class="footer-copy">© 2026 Komereglissade · CaseReady · Clinical AI Systems · Atlanta, GA</span>
+  <span class="footer-api" id="apiEndpoint"></span>
+</footer>
+
+<script>
+  const API_BASE = "https://ezsspeeaair46nqlxblyqkndle0rxoju.lambda-url.us-east-1.on.aws";
+  const API_KEY  = "Y8a1GjW0lXpRJwcDOtzCugysP67on3Z4";
+
+  const headers = { "X-API-Key": API_KEY, "Content-Type": "application/json" };
+
+  let briefs = {};
+  let openRow = null;
+
+  // Clock
+  function updateClock() {
+    const now = new Date();
+    document.getElementById("clock").textContent = now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  // Schedule date
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  document.getElementById("scheduleDate").textContent = tomorrow.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+  document.getElementById("apiEndpoint").textContent = API_BASE;
+
+  function statusClass(s) {
+    if (!s) return "loading";
+    if (s === "READY") return "ready";
+    if (s === "AT_RISK") return "risk";
+    return "blocked";
+  }
+
+  function dimIcon(s) {
+    if (!s) return `<span class="dim-icon dim-loading">···</span>`;
+    if (s === "READY")   return `<span class="dim-icon dim-ready">✓</span>`;
+    if (s === "AT_RISK") return `<span class="dim-icon dim-risk">⚠</span>`;
+    return `<span class="dim-icon dim-blocked">✕</span>`;
+  }
+
+  function badgeHtml(s) {
+    if (!s) return `<span class="badge badge-loading">Loading</span>`;
+    if (s === "READY")   return `<span class="badge badge-ready">Ready</span>`;
+    if (s === "AT_RISK") return `<span class="badge badge-risk">At Risk</span>`;
+    return `<span class="badge badge-blocked">Action Required</span>`;
+  }
+
+  function renderTable(cases) {
+    const tbody = document.getElementById("caseTable");
+    tbody.innerHTML = "";
+
+    cases.forEach((c, i) => {
+      const b = briefs[c.case_id];
+      const sc = b ? statusClass(b.overall_status) : "loading";
+      const rowClass = b ? `row-${sc}` : "";
+
+      // Main row
+      const tr = document.createElement("tr");
+      tr.className = rowClass;
+      tr.id = `row-${c.case_id}`;
+      tr.onclick = () => toggleDetail(c.case_id);
+      tr.innerHTML = `
+        <td><span class="or-room">${c.or_room}</span></td>
+        <td>
+          <div class="case-name">${c.procedure}</div>
+          <div class="case-surgeon">${c.surgeon}</div>
+          <div class="case-time">${c.or_time}</div>
+        </td>
+        <td>${badgeHtml(b?.overall_status)}</td>
+        <td class="center">${dimIcon(b?.vendor?.status)}</td>
+        <td class="center">${dimIcon(b?.spd?.status)}</td>
+        <td class="center">${dimIcon(b?.inventory?.status)}</td>
+        <td class="center">${dimIcon(b?.preference_card?.status)}</td>
+        <td class="center">${dimIcon(b?.patient_prep?.status)}</td>
+      `;
+      tbody.appendChild(tr);
+
+      // Detail row
+      const dtr = document.createElement("tr");
+      dtr.className = "detail-row";
+      dtr.id = `detail-${c.case_id}`;
+      dtr.innerHTML = `<td colspan="8"><div class="detail-inner" id="inner-${c.case_id}"></div></td>`;
+      tbody.appendChild(dtr);
+    });
+  }
+
+  function toggleDetail(caseId) {
+    const inner = document.getElementById(`inner-${caseId}`);
+    if (!inner) return;
+
+    if (openRow === caseId) {
+      inner.classList.remove("open");
+      openRow = null;
+      return;
+    }
+    // Close previous
+    if (openRow) {
+      const prev = document.getElementById(`inner-${openRow}`);
+      if (prev) prev.classList.remove("open");
+    }
+    openRow = caseId;
+
+    const b = briefs[caseId];
+    if (!b) { inner.innerHTML = `<p style="color:var(--muted);font-size:11px">Brief still loading...</p>`; inner.classList.add("open"); return; }
+
+    const dims = [
+      { key: "vendor", label: "Vendor / Rep" },
+      { key: "spd", label: "SPD / Sterilization" },
+      { key: "inventory", label: "Implant Inventory" },
+      { key: "preference_card", label: "Preference Card" },
+      { key: "patient_prep", label: "Patient Prep" },
+    ];
+
+    const dimCards = dims.map(d => {
+      const dim = b[d.key];
+      const sc = statusClass(dim?.status);
+      const flags = (dim?.flags || []).map(f => `<div style="font-size:10px;color:var(--risk);margin-top:4px">⚠ ${f}</div>`).join("");
+      const action = dim?.action_required ? `<div class="detail-card-action">→ ${dim.action_required}</div>` : "";
+      return `
+        <div class="detail-card">
+          <div class="detail-card-title">${d.label}</div>
+          <div class="detail-card-status ${sc}">${dim?.status || "—"}</div>
+          <div class="detail-card-summary">${dim?.summary || "—"}</div>
+          ${flags}
+          ${action}
+        </div>`;
+    }).join("");
+
+    const actions = (b.critical_actions || []).map(a => `<div class="action-item">${a}</div>`).join("");
+
+    inner.innerHTML = `
+      <div class="detail-grid">${dimCards}</div>
+      ${actions ? `<div class="detail-actions"><div class="detail-actions-title">Critical Actions</div>${actions}</div>` : ""}
+      <div class="surgeon-note">
+        <div class="surgeon-note-label">Surgeon Brief</div>
+        ${b.surgeon_notes || "—"}
+      </div>`;
+    inner.classList.add("open");
+  }
+
+  function updateSummary() {
+    const vals = Object.values(briefs);
+    const ready   = vals.filter(b => b.overall_status === "READY").length;
+    const risk    = vals.filter(b => b.overall_status === "AT_RISK").length;
+    const blocked = vals.filter(b => b.overall_status === "BLOCKED").length;
+    document.getElementById("countReady").textContent = ready;
+    document.getElementById("countRisk").textContent = risk;
+    document.getElementById("countBlocked").textContent = blocked;
+    document.getElementById("countClean").textContent = 0;
+  }
+
+  async function loadDashboard() {
+    const btn = document.getElementById("refreshBtn");
+    btn.disabled = true;
+    btn.textContent = "Loading...";
+
+    try {
+      // 1. Get case list
+      const casesRes = await fetch(`${API_BASE}/cases`, { headers });
+      const cases = await casesRes.json();
+
+      // Initial render with loading state
+      renderTable(cases);
+
+      // 2. Fetch all briefs in parallel
+      const briefPromises = cases.map(async c => {
+        try {
+          const res = await fetch(`${API_BASE}/brief/${c.case_id}`, { method: "POST", headers });
+          const brief = await res.json();
+          briefs[c.case_id] = brief;
+          // Re-render as each brief arrives
+          renderTable(cases);
+          updateSummary();
+        } catch (e) {
+          console.error(`Failed to load brief for ${c.case_id}`, e);
+        }
+      });
+
+      await Promise.all(briefPromises);
+
+      document.getElementById("lastRefresh").textContent = new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+      document.getElementById("loader").classList.add("hidden");
+
+    } catch (e) {
+      console.error("Failed to load dashboard", e);
+      document.getElementById("loader").classList.add("hidden");
+      alert("Could not reach the CaseReady API. Check your connection or API key.");
+    }
+
+    btn.disabled = false;
+    btn.textContent = "Refresh Briefs";
+  }
+
+  // Auto-load on open
+  loadDashboard();
+</script>
+</body>
+</html>

@@ -2,201 +2,74 @@
   "cases": [
     {
       "case_id": "CR-2026-0841",
-      "patient": {
-        "name": "Margaret T.",
-        "dob": "1958-03-14",
-        "mrn": "ASC-004821",
-        "weight_kg": 72,
-        "height_cm": 162,
-        "asa_class": "II"
-      },
-      "procedure": {
-        "type": "Total Knee Arthroplasty",
-        "laterality": "Right",
-        "cpt_code": "27447",
-        "scheduled_date": "2026-05-30",
-        "or_time": "07:30",
-        "or_room": "OR-2",
-        "estimated_duration_min": 90
-      },
-      "surgeon": {
-        "id": "DR-HAYES",
-        "name": "Dr. James Hayes",
-        "specialty": "Orthopedic Surgery"
-      },
-      "implant_system": {
-        "manufacturer": "Zimmer Biomet",
-        "system": "Persona Knee",
-        "rep_name": "Kyle Marsh",
-        "rep_phone": "404-555-0192",
-        "component_sizes": {
-          "femur": "Size 5",
-          "tibia": "Size 4",
-          "poly_insert": "10mm",
-          "patellar_button": "35mm"
-        }
-      },
-      "loaner_tray": {
-        "tray_ids": ["ZB-PERSONA-F5", "ZB-PERSONA-T4", "ZB-TRIALS"],
-        "required_by": "2026-05-29T14:00:00",
-        "spd_processor": "Central Sterile - Unit B"
-      },
-      "anesthesia": {
-        "type": "Spinal + MAC",
-        "provider": "Dr. Ana Reyes, CRNA"
-      }
+      "patient": { "name": "Margaret T.", "dob": "1958-03-14", "mrn": "ASC-004821", "weight_kg": 72, "height_cm": 162, "asa_class": "II" },
+      "procedure": { "type": "Total Knee Arthroplasty", "laterality": "Right", "cpt_code": "27447", "scheduled_date": "2026-05-30", "or_time": "07:30", "or_room": "OR-2", "estimated_duration_min": 90 },
+      "surgeon": { "id": "DR-HAYES", "name": "Dr. James Hayes", "specialty": "Orthopedic Surgery" },
+      "implant_system": { "manufacturer": "Zimmer Biomet", "system": "Persona Knee", "rep_name": "Kyle Marsh", "rep_phone": "404-555-0192", "component_sizes": { "femur": "Size 5", "tibia": "Size 4", "poly_insert": "10mm", "patellar_button": "35mm" } },
+      "loaner_tray": { "tray_ids": ["ZB-PERSONA-F5", "ZB-PERSONA-T4", "ZB-TRIALS"], "required_by": "2026-05-29T14:00:00", "spd_processor": "Central Sterile - Unit B" },
+      "anesthesia": { "type": "Spinal + MAC", "provider": "Dr. Ana Reyes, CRNA" }
     },
     {
       "case_id": "CR-2026-0842",
-      "patient": {
-        "name": "Robert K.",
-        "dob": "1963-11-02",
-        "mrn": "ASC-005103",
-        "weight_kg": 88,
-        "height_cm": 178,
-        "asa_class": "III"
-      },
-      "procedure": {
-        "type": "Lumbar Spinal Fusion",
-        "laterality": "Bilateral L4-L5",
-        "cpt_code": "22633",
-        "scheduled_date": "2026-05-30",
-        "or_time": "10:00",
-        "or_room": "OR-3",
-        "estimated_duration_min": 180
-      },
-      "surgeon": {
-        "id": "DR-CHEN",
-        "name": "Dr. Linda Chen",
-        "specialty": "Spine Surgery"
-      },
-      "implant_system": {
-        "manufacturer": "Medtronic",
-        "system": "PEEK CLYDESDALE Spacer + CD Horizon Solera",
-        "rep_name": "Sarah Okonkwo",
-        "rep_phone": "678-555-0347",
-        "component_sizes": {
-          "cage_width": "26mm",
-          "cage_height": "12mm",
-          "pedicle_screws": "6.5x45mm x4, 6.5x40mm x4",
-          "rods": "5.5mm titanium"
-        }
-      },
-      "loaner_tray": {
-        "tray_ids": ["MDT-CLYDESDALE-SET", "MDT-SOLERA-SCREW", "MDT-SOLERA-ROD"],
-        "required_by": "2026-05-29T16:00:00",
-        "spd_processor": "Central Sterile - Unit A"
-      },
-      "anesthesia": {
-        "type": "General",
-        "provider": "Dr. Marcus Webb"
-      }
+      "patient": { "name": "Robert K.", "dob": "1963-11-02", "mrn": "ASC-005103", "weight_kg": 88, "height_cm": 178, "asa_class": "III" },
+      "procedure": { "type": "Lumbar Spinal Fusion", "laterality": "Bilateral L4-L5", "cpt_code": "22633", "scheduled_date": "2026-05-30", "or_time": "10:00", "or_room": "OR-3", "estimated_duration_min": 180 },
+      "surgeon": { "id": "DR-CHEN", "name": "Dr. Linda Chen", "specialty": "Spine Surgery" },
+      "implant_system": { "manufacturer": "Medtronic", "system": "PEEK CLYDESDALE Spacer + CD Horizon Solera", "rep_name": "Sarah Okonkwo", "rep_phone": "678-555-0347", "component_sizes": { "cage_width": "26mm", "cage_height": "12mm", "pedicle_screws": "6.5x45mm x4, 6.5x40mm x4", "rods": "5.5mm titanium" } },
+      "loaner_tray": { "tray_ids": ["MDT-CLYDESDALE-SET", "MDT-SOLERA-SCREW", "MDT-SOLERA-ROD"], "required_by": "2026-05-29T16:00:00", "spd_processor": "Central Sterile - Unit A" },
+      "anesthesia": { "type": "General", "provider": "Dr. Marcus Webb" }
+    },
+    {
+      "case_id": "CR-2026-0843",
+      "patient": { "name": "Dorothy W.", "dob": "1952-07-22", "mrn": "ASC-006214", "weight_kg": 68, "height_cm": 158, "asa_class": "II" },
+      "procedure": { "type": "Total Hip Arthroplasty", "laterality": "Left", "cpt_code": "27130", "scheduled_date": "2026-05-30", "or_time": "07:30", "or_room": "OR-1", "estimated_duration_min": 80 },
+      "surgeon": { "id": "DR-PATEL", "name": "Dr. Priya Patel", "specialty": "Orthopedic Surgery" },
+      "implant_system": { "manufacturer": "DePuy Synthes", "system": "Pinnacle Hip System", "rep_name": "Jordan Ellis", "rep_phone": "404-555-0281", "component_sizes": { "cup": "52mm", "liner": "standard", "head": "32mm +0", "stem": "Size 3" } },
+      "loaner_tray": { "tray_ids": ["DPS-PINNACLE-CUP", "DPS-PINNACLE-STEM"], "required_by": "2026-05-29T12:00:00", "spd_processor": "Central Sterile - Unit B" },
+      "anesthesia": { "type": "Spinal + MAC", "provider": "Dr. Ana Reyes, CRNA" }
+    },
+    {
+      "case_id": "CR-2026-0844",
+      "patient": { "name": "Marcus D.", "dob": "1988-04-10", "mrn": "ASC-007390", "weight_kg": 84, "height_cm": 182, "asa_class": "I" },
+      "procedure": { "type": "ACL Reconstruction", "laterality": "Right", "cpt_code": "29888", "scheduled_date": "2026-05-30", "or_time": "08:00", "or_room": "OR-4", "estimated_duration_min": 70 },
+      "surgeon": { "id": "DR-KIM", "name": "Dr. Susan Kim", "specialty": "Sports Medicine / Orthopedic Surgery" },
+      "implant_system": { "manufacturer": "Arthrex", "system": "TightRope ACL System", "rep_name": "Devon Park", "rep_phone": "404-555-0419", "component_sizes": { "graft": "Patellar tendon autograft", "tightrope": "standard", "interference_screw": "9x23mm" } },
+      "loaner_tray": { "tray_ids": ["ATX-TIGHTROPE-SET", "ATX-SCOPE-SET"], "required_by": "2026-05-29T13:00:00", "spd_processor": "Central Sterile - Unit A" },
+      "anesthesia": { "type": "General", "provider": "Dr. James Ford" }
     }
   ],
 
   "vendor_status": {
-    "CR-2026-0841": {
-      "confirmed": true,
-      "confirmation_method": "email",
-      "confirmed_at": "2026-05-28T14:32:00",
-      "rep_present": true,
-      "notes": "Kyle confirmed all components in transit. ETA 05:30 day-of."
-    },
-    "CR-2026-0842": {
-      "confirmed": false,
-      "confirmation_method": null,
-      "confirmed_at": null,
-      "rep_present": null,
-      "notes": "No confirmation received. Last contact attempt 2026-05-27. Rep not responding."
-    }
+    "CR-2026-0841": { "confirmed": true, "confirmation_method": "email", "confirmed_at": "2026-05-28T14:32:00", "rep_present": true, "notes": "Kyle confirmed all components in transit. ETA 05:30 day-of." },
+    "CR-2026-0842": { "confirmed": false, "confirmation_method": null, "confirmed_at": null, "rep_present": null, "notes": "No confirmation received. Last contact attempt 2026-05-27. Rep not responding." },
+    "CR-2026-0843": { "confirmed": true, "confirmation_method": "phone", "confirmed_at": "2026-05-28T10:15:00", "rep_present": true, "notes": "Jordan confirmed. All components verified shipped. ETA 06:00 day-of." },
+    "CR-2026-0844": { "confirmed": false, "confirmation_method": "email", "confirmed_at": "2026-05-28T16:00:00", "rep_present": true, "notes": "Devon acknowledged via email but did not confirm all components. TightRope size availability unconfirmed." }
   },
 
   "spd_status": {
-    "CR-2026-0841": {
-      "trays_received": true,
-      "received_at": "2026-05-28T11:15:00",
-      "sterilization_complete": true,
-      "sterilization_method": "Steam autoclave",
-      "cycle_completed_at": "2026-05-28T16:45:00",
-      "sterility_expiry": "2026-06-28",
-      "storage_location": "SPD Cabinet 4B",
-      "flags": []
-    },
-    "CR-2026-0842": {
-      "trays_received": false,
-      "received_at": null,
-      "sterilization_complete": false,
-      "sterilization_method": null,
-      "cycle_completed_at": null,
-      "sterility_expiry": null,
-      "storage_location": null,
-      "flags": ["TRAYS NOT RECEIVED", "STERILIZATION WINDOW AT RISK — case is 2026-05-30 07:00 dropoff required by 05-29 16:00"]
-    }
+    "CR-2026-0841": { "trays_received": true, "received_at": "2026-05-28T11:15:00", "sterilization_complete": true, "sterilization_method": "Steam autoclave", "cycle_completed_at": "2026-05-28T16:45:00", "sterility_expiry": "2026-06-28", "storage_location": "SPD Cabinet 4B", "flags": [] },
+    "CR-2026-0842": { "trays_received": false, "received_at": null, "sterilization_complete": false, "sterilization_method": null, "cycle_completed_at": null, "sterility_expiry": null, "storage_location": null, "flags": ["TRAYS NOT RECEIVED", "STERILIZATION WINDOW AT RISK"] },
+    "CR-2026-0843": { "trays_received": true, "received_at": "2026-05-28T09:30:00", "sterilization_complete": true, "sterilization_method": "Steam autoclave", "cycle_completed_at": "2026-05-28T14:00:00", "sterility_expiry": "2026-06-28", "storage_location": "SPD Cabinet 2A", "flags": [] },
+    "CR-2026-0844": { "trays_received": true, "received_at": "2026-05-28T15:00:00", "sterilization_complete": true, "sterilization_method": "Steam autoclave", "cycle_completed_at": "2026-05-28T19:30:00", "sterility_expiry": "2026-06-28", "storage_location": "SPD Cabinet 3C", "flags": [] }
   },
 
   "inventory_status": {
-    "CR-2026-0841": {
-      "all_components_verified": true,
-      "on_site": true,
-      "verified_by": "Lisa Monroe, RN",
-      "verified_at": "2026-05-28T17:00:00",
-      "missing_components": [],
-      "backup_sizes_available": ["Size 4 femur", "Size 6 femur", "9mm poly", "12mm poly"]
-    },
-    "CR-2026-0842": {
-      "all_components_verified": false,
-      "on_site": false,
-      "verified_by": null,
-      "verified_at": null,
-      "missing_components": ["MDT-CLYDESDALE-SET not confirmed on-site", "Rod inventory unverified"],
-      "backup_sizes_available": []
-    }
+    "CR-2026-0841": { "all_components_verified": true, "on_site": true, "verified_by": "Lisa Monroe, RN", "verified_at": "2026-05-28T17:00:00", "missing_components": [], "backup_sizes_available": ["Size 4 femur", "Size 6 femur", "9mm poly", "12mm poly"] },
+    "CR-2026-0842": { "all_components_verified": false, "on_site": false, "verified_by": null, "verified_at": null, "missing_components": ["MDT-CLYDESDALE-SET not confirmed on-site", "Rod inventory unverified"], "backup_sizes_available": [] },
+    "CR-2026-0843": { "all_components_verified": true, "on_site": true, "verified_by": "Tom Nguyen, CST", "verified_at": "2026-05-28T16:00:00", "missing_components": [], "backup_sizes_available": ["53mm cup", "51mm cup", "32mm +4 head"] },
+    "CR-2026-0844": { "all_components_verified": true, "on_site": true, "verified_by": "Lisa Monroe, RN", "verified_at": "2026-05-28T17:30:00", "missing_components": [], "backup_sizes_available": ["8x23mm screw", "10x23mm screw"] }
   },
 
   "preference_cards": {
-    "DR-HAYES": {
-      "procedure": "Total Knee Arthroplasty",
-      "last_updated": "2026-03-10",
-      "verified_against_case": true,
-      "verified_by": "Amanda Torres, CST",
-      "special_requests": [
-        "Prefers large-bore suction available at incision",
-        "Tourniquet set to 300mmHg",
-        "Pulse lavage required before cementing",
-        "Coban wrap immediately post-closure"
-      ],
-      "implant_notes": "Confirmed Persona system only — do not substitute without direct authorization"
-    },
-    "DR-CHEN": {
-      "procedure": "Lumbar Spinal Fusion",
-      "last_updated": "2026-01-22",
-      "verified_against_case": false,
-      "verified_by": null,
-      "special_requests": [],
-      "implant_notes": "Card not verified for this case"
-    }
+    "DR-HAYES": { "procedure": "Total Knee Arthroplasty", "last_updated": "2026-03-10", "verified_against_case": true, "verified_by": "Amanda Torres, CST", "special_requests": ["Large-bore suction at incision", "Tourniquet at 300mmHg", "Pulse lavage before cementing", "Coban wrap post-closure"], "implant_notes": "Persona system only — no substitution without direct authorization" },
+    "DR-CHEN": { "procedure": "Lumbar Spinal Fusion", "last_updated": "2026-01-22", "verified_against_case": false, "verified_by": null, "special_requests": [], "implant_notes": "Card not verified for this case" },
+    "DR-PATEL": { "procedure": "Total Hip Arthroplasty", "last_updated": "2026-04-15", "verified_against_case": true, "verified_by": "Amanda Torres, CST", "special_requests": ["Cemented stem technique", "Prone positioning required", "Antibiotic irrigation before closure"], "implant_notes": "Pinnacle system preferred. Confirm cup size with imaging on table." },
+    "DR-KIM": { "procedure": "ACL Reconstruction", "last_updated": "2026-05-01", "verified_against_case": true, "verified_by": "Rachel Moore, CST", "special_requests": ["Tourniquet at 250mmHg", "C-arm required for graft tensioning check"], "implant_notes": "TightRope system. Confirm graft diameter intraoperatively." }
   },
 
   "patient_prep": {
-    "CR-2026-0841": {
-      "pre_op_complete": true,
-      "consents_signed": true,
-      "h_and_p_within_30_days": true,
-      "npo_confirmed": true,
-      "labs_reviewed": true,
-      "imaging_available": true,
-      "allergies_flagged": false,
-      "flags": []
-    },
-    "CR-2026-0842": {
-      "pre_op_complete": true,
-      "consents_signed": true,
-      "h_and_p_within_30_days": true,
-      "npo_confirmed": true,
-      "labs_reviewed": false,
-      "imaging_available": true,
-      "allergies_flagged": false,
-      "flags": ["LABS NOT REVIEWED — ASA III patient, cardiology clearance pending"]
-    }
+    "CR-2026-0841": { "pre_op_complete": true, "consents_signed": true, "h_and_p_within_30_days": true, "npo_confirmed": true, "labs_reviewed": true, "imaging_available": true, "allergies_flagged": false, "flags": [] },
+    "CR-2026-0842": { "pre_op_complete": true, "consents_signed": true, "h_and_p_within_30_days": true, "npo_confirmed": true, "labs_reviewed": false, "imaging_available": true, "allergies_flagged": false, "flags": ["LABS NOT REVIEWED — ASA III patient, cardiology clearance pending"] },
+    "CR-2026-0843": { "pre_op_complete": true, "consents_signed": true, "h_and_p_within_30_days": true, "npo_confirmed": true, "labs_reviewed": true, "imaging_available": true, "allergies_flagged": false, "flags": [] },
+    "CR-2026-0844": { "pre_op_complete": true, "consents_signed": true, "h_and_p_within_30_days": true, "npo_confirmed": true, "labs_reviewed": true, "imaging_available": true, "allergies_flagged": false, "flags": [] }
   }
 }
