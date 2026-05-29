@@ -2,39 +2,33 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: CaseReady — AI surgical coordination API
 
-Globals:
-  Function:
-    Timeout: 120        # agent calls Claude + 5 tools; allow up to 2 minutes
-    MemorySize: 512
-    Environment:
-      Variables:
-        ANTHROPIC_API_KEY: !Sub "{{resolve:secretsmanager:caseready/anthropic-key:SecretString:key}}"
-        CASEREADY_API_KEY: !Sub "{{resolve:secretsmanager:caseready/api-secret:SecretString:key}}"
-
 Parameters:
   Environment:
     Type: String
     Default: staging
     AllowedValues: [staging, production]
+  ImageUri:
+    Type: String
+    Description: ECR image URI to deploy
+
+Globals:
+  Function:
+    Timeout: 120
+    MemorySize: 512
 
 Resources:
 
-  # ── ECR repository for the Lambda container image ──────────────────────────
-  CaseReadyECR:
-    Type: AWS::ECR::Repository
-    Properties:
-      RepositoryName: !Sub "caseready-${Environment}"
-      ImageScanningConfiguration:
-        ScanOnPush: true
-
-  # ── Lambda function ─────────────────────────────────────────────────────────
   CaseReadyFunction:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: !Sub "caseready-api-${Environment}"
       PackageType: Image
-      ImageUri: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/caseready-${Environment}:latest"
+      ImageUri: !Ref ImageUri
       Description: CaseReady surgery briefing agent — FastAPI on Lambda
+      Environment:
+        Variables:
+          ANTHROPIC_API_KEY: "{{resolve:secretsmanager:caseready/anthropic-key}}"
+          CASEREADY_API_KEY: "{{resolve:secretsmanager:caseready/api-secret}}"
       Events:
         ApiRoot:
           Type: HttpApi
@@ -48,6 +42,17 @@ Resources:
             ApiId: !Ref CaseReadyHttpApi
             Path: /{proxy+}
             Method: ANY
+      FunctionUrlConfig:
+        AuthType: NONE
+        Cors:
+          AllowOrigins:
+            - "*"
+          AllowMethods:
+            - GET
+            - POST
+          AllowHeaders:
+            - Content-Type
+            - X-API-Key
       Policies:
         - AWSLambdaBasicExecutionRole
         - Statement:
@@ -56,19 +61,14 @@ Resources:
               - secretsmanager:GetSecretValue
             Resource:
               - !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:caseready/*"
-    Metadata:
-      DockerTag: !Sub "caseready-${Environment}"
-      DockerContext: ..
-      Dockerfile: Dockerfile
 
-  # ── HTTP API Gateway ────────────────────────────────────────────────────────
   CaseReadyHttpApi:
     Type: AWS::Serverless::HttpApi
     Properties:
-      StageName: !Ref Environment
+      StageName: $default
       CorsConfiguration:
         AllowOrigins:
-          - "*"           # tighten to your frontend domain before go-live
+          - "*"
         AllowMethods:
           - GET
           - POST
@@ -76,7 +76,6 @@ Resources:
           - Content-Type
           - X-API-Key
 
-  # ── CloudWatch log group ────────────────────────────────────────────────────
   CaseReadyLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
@@ -86,7 +85,7 @@ Resources:
 Outputs:
   ApiUrl:
     Description: CaseReady API base URL
-    Value: !Sub "https://${CaseReadyHttpApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}"
+    Value: !Sub "https://${CaseReadyHttpApi}.execute-api.${AWS::Region}.amazonaws.com"
     Export:
       Name: !Sub "CaseReadyApiUrl-${Environment}"
 
@@ -94,6 +93,8 @@ Outputs:
     Description: Lambda function ARN
     Value: !GetAtt CaseReadyFunction.Arn
 
-  ECRRepository:
-    Description: ECR repository URI
-    Value: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/caseready-${Environment}"
+  FunctionUrl:
+    Description: Lambda Function URL (no timeout — use this for /brief)
+    Value: !GetAtt CaseReadyFunctionUrl.FunctionUrl
+    Export:
+      Name: !Sub "CaseReadyFunctionUrl-${Environment}"

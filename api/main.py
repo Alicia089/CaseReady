@@ -25,10 +25,17 @@ app.add_middleware(
 )
 
 _DATA_PATH = Path(__file__).parent.parent / "data" / "sample_cases.json"
+_BRIEFS_PATH = Path(__file__).parent.parent / "data" / "sample_briefs.json"
 
 
 def _load_cases() -> list[dict]:
     return json.loads(_DATA_PATH.read_text())["cases"]
+
+
+def _load_cached_briefs() -> dict:
+    if _BRIEFS_PATH.exists():
+        return json.loads(_BRIEFS_PATH.read_text())
+    return {}
 
 
 @app.get("/health")
@@ -74,8 +81,10 @@ def get_case(case_id: str):
 @app.post("/brief/{case_id}", response_model=SurgeryBrief, dependencies=[Depends(require_api_key)])
 def get_brief(case_id: str):
     """
-    Run the CaseReady briefing agent for a surgical case.
-    Checks all five readiness dimensions and returns a structured SurgeryBrief.
+    Return the surgery readiness brief for a case.
+
+    For demo cases (CR-2026-0841, CR-2026-0842) returns a pre-computed brief instantly.
+    For new case IDs the agent runs live — allow up to 60 seconds.
 
     Readiness levels:
     - READY: Confirmed and verified across all dimensions
@@ -85,6 +94,11 @@ def get_brief(case_id: str):
     cases = _load_cases()
     if not any(c["case_id"] == case_id for c in cases):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Case {case_id} not found")
+
+    # Return cached brief instantly if available (avoids API Gateway 29s timeout)
+    cached = _load_cached_briefs()
+    if case_id in cached:
+        return SurgeryBrief(**cached[case_id])
 
     try:
         brief = brief_surgeon(case_id)
