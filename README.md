@@ -14,9 +14,32 @@ No existing ASC platform automates this coordination layer with AI. CaseReady do
 
 ---
 
+## Architecture
+
+```
+Surgeon / OR Coordinator
+        │
+   API Gateway (AWS)
+        │
+   Lambda + FastAPI        ← api/main.py
+        │
+   CaseReady Agent         ← agent/case_agent.py
+        │
+   ┌────┴────┬────────────┬──────────────┬──────────────┐
+Vendor     SPD        Inventory   Preference     Patient
+Status   Status       Status        Card          Prep
+        │
+  Claude claude-sonnet-4-6 (tool use)
+        │
+   SurgeryBrief (Pydantic)
+        READY / AT_RISK / BLOCKED per dimension
+```
+
+---
+
 ## Surgery Briefing Agent
 
-The core of this repo is a Claude-powered agentic system that gives surgeons a **complete, structured readiness brief** for their case — before they enter the OR.
+The core is a Claude-powered agentic system that gives surgeons a **complete, structured readiness brief** before they enter the OR.
 
 ### What it checks
 
@@ -34,56 +57,95 @@ The core of this repo is a Claude-powered agentic system that gives surgeons a *
 - `AT_RISK` — Unresolved flag that needs attention before OR time
 - `BLOCKED` — Case cannot safely proceed without immediate action
 
-### Sample output
-
-```
-================================================================
-  CASEREADY SURGERY BRIEF
-================================================================
-  Case:      CR-2026-0841
-  Patient:   Margaret T.
-  Procedure: Total Knee Arthroplasty — Right
-  Surgeon:   Dr. James Hayes
-  OR Time:   07:30  |  Room: OR-2
-  Status:    READY
-----------------------------------------------------------------
-
-  Vendor / Rep  [READY]
-    Kyle Marsh (Zimmer Biomet) confirmed via email 05-28. Components in transit, ETA 05:30.
-
-  SPD / Sterilization  [READY]
-    All 3 trays received 05-28, steam autoclave complete 16:45. Stored in SPD Cabinet 4B.
-
-  Implant Inventory  [READY]
-    All Persona Knee components verified on-site by Lisa Monroe RN. Backup sizes available.
-
-  Preference Card  [READY]
-    Card verified by Amanda Torres CST. Tourniquet 300mmHg, pulse lavage before cementing.
-
-  Patient Prep  [READY]
-    Pre-op complete. Consents signed, H&P current, NPO confirmed, labs reviewed.
-================================================================
-```
-
 ---
 
-## Quick Start
+## Quick Start (local)
 
 ```bash
 git clone https://github.com/Alicia089/CaseReady.git
 cd CaseReady
 pip install -r requirements.txt
-cp .env.example .env   # add your ANTHROPIC_API_KEY
+cp .env.example .env      # fill in ANTHROPIC_API_KEY and CASEREADY_API_KEY
 
-# Brief a surgeon on case CR-2026-0841 (ready case)
+# Run the API server
+uvicorn api.main:app --reload
+
+# Or run the CLI directly
 python -m agent.case_agent --case CR-2026-0841
-
-# Brief a surgeon on case CR-2026-0842 (blocked case — vendor unconfirmed, trays not received)
-python -m agent.case_agent --case CR-2026-0842
-
-# JSON output
-python -m agent.case_agent --case CR-2026-0841 --json
+python -m agent.case_agent --case CR-2026-0842   # blocked case
 ```
+
+---
+
+## API Endpoints
+
+All endpoints (except `/health`) require the header `X-API-Key: <your-key>`.
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/health` | Health check — no auth required |
+| `GET` | `/cases` | List today's cases with patient, surgeon, OR time |
+| `GET` | `/cases/{case_id}` | Full case details |
+| `POST` | `/brief/{case_id}` | Run the briefing agent — returns `SurgeryBrief` |
+
+### Example: get a surgery brief
+
+```bash
+curl -X POST https://your-api-url/brief/CR-2026-0841 \
+  -H "X-API-Key: your-key"
+```
+
+```json
+{
+  "case_id": "CR-2026-0841",
+  "patient_name": "Margaret T.",
+  "procedure": "Total Knee Arthroplasty",
+  "surgeon": "Dr. James Hayes",
+  "or_time": "07:30",
+  "or_room": "OR-2",
+  "overall_status": "READY",
+  "vendor":        { "status": "READY",   "summary": "Kyle Marsh confirmed via email..." },
+  "spd":           { "status": "READY",   "summary": "All trays sterilized, stored in SPD Cabinet 4B" },
+  "inventory":     { "status": "READY",   "summary": "All Persona components verified on-site" },
+  "preference_card": { "status": "READY", "summary": "Card verified by Amanda Torres CST" },
+  "patient_prep":  { "status": "READY",   "summary": "Pre-op complete, no flags" },
+  "critical_actions": ["Confirm component arrival at 05:30 with Kyle Marsh before patient transport"],
+  "surgeon_notes": "Clean case. Components in transit — confirm on-site before bringing patient to OR."
+}
+```
+
+---
+
+## Deploy to AWS
+
+### Prerequisites
+- AWS CLI configured (`aws configure`)
+- Docker running
+- SAM CLI installed (`brew install aws-sam-cli` or see [AWS docs](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html))
+
+### Store secrets in AWS Secrets Manager
+
+```bash
+# Anthropic API key
+aws secretsmanager create-secret \
+  --name caseready/anthropic-key \
+  --secret-string '{"key":"sk-ant-..."}'
+
+# CaseReady API key (any strong random string)
+aws secretsmanager create-secret \
+  --name caseready/api-secret \
+  --secret-string '{"key":"your-strong-api-key"}'
+```
+
+### Deploy
+
+```bash
+chmod +x infra/deploy.sh
+./infra/deploy.sh staging      # staging environment
+./infra/deploy.sh production   # production environment
+```
+
+The script builds the Docker image, pushes to ECR, and deploys the Lambda + API Gateway stack via SAM. Prints the live API URL when done.
 
 ---
 
@@ -93,46 +155,43 @@ python -m agent.case_agent --case CR-2026-0841 --json
 CaseReady/
   agent/
     case_agent.py         ← Claude agentic loop with tool use
-    tools.py              ← Five readiness check tools + tool definitions
+    tools.py              ← Five readiness check tools
     models.py             ← Pydantic schemas (SurgeryBrief, DimensionStatus)
-    prompts.py            ← System prompt for the briefing agent
+    prompts.py            ← System prompt
+  api/
+    main.py               ← FastAPI app + Mangum Lambda handler
+    auth.py               ← API key auth (Cognito-ready)
   data/
-    sample_cases.json     ← Two realistic surgical cases (one ready, one blocked)
+    sample_cases.json     ← Two sample cases (one READY, one BLOCKED)
+  infra/
+    template.yaml         ← AWS SAM (Lambda + API Gateway + ECR + CloudWatch)
+    deploy.sh             ← One-command deploy script
+  Dockerfile              ← Lambda container image
   requirements.txt
   .env.example
 ```
 
 ---
 
-## How the Agent Works
+## Production Roadmap
 
-The agent uses Claude's tool use API in an agentic loop:
-
-1. Surgeon requests a brief for a case ID
-2. Claude calls all five readiness tools in sequence
-3. Each tool queries the case data and returns structured JSON
-4. Claude synthesizes results into a `SurgeryBrief` with per-dimension status and critical actions
-5. The brief is returned as a structured Pydantic object and printed to the terminal
-
-```
-Surgeon request
-    → Claude (claude-sonnet-4-6)
-        → check_vendor_status(case_id)
-        → check_spd_status(case_id)
-        → check_implant_inventory(case_id)
-        → check_preference_card(case_id)
-        → check_patient_prep(case_id)
-    → Structured SurgeryBrief
-        → READY / AT_RISK / BLOCKED per dimension
-        → Critical actions list
-        → Surgeon notes
-```
+| Phase | What gets added |
+|-------|----------------|
+| ✅ **Done** | Agent, API, AWS deployment config |
+| **Next** | PostgreSQL/RDS — replace sample JSON with real case database |
+| **Next** | AWS Cognito — replace API key auth with surgeon/staff login |
+| **Later** | Epic FHIR integration — live EHR data |
+| **Later** | Vendor portal + SPD system integrations |
+| **Later** | Web dashboard + mobile brief view |
+| **Later** | SNS push alerts when a case goes BLOCKED |
 
 ---
 
 ## Skills
 
 ![Python](https://img.shields.io/badge/Python-3.11-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.115-green)
 ![Claude API](https://img.shields.io/badge/Claude%20API-tool%20use-purple)
+![AWS Lambda](https://img.shields.io/badge/AWS-Lambda%20%2B%20API%20Gateway-orange)
+![Docker](https://img.shields.io/badge/Docker-ECR-blue)
 ![Pydantic](https://img.shields.io/badge/Pydantic-v2-green)
-![Healthcare AI](https://img.shields.io/badge/Healthcare%20AI-ASC%20Coordination-red)
