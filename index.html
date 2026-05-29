@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Komereglissade | Clinical AI Systems</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Martian+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #faf8f5;
+    --surface: #f3efe8;
+    --border: #e0d8cc;
+    --accent: #8a2535;
+    --accent2: #a8864a;
+    --muted: #b0a090;
+    --text: #1a1410;
+    --text-dim: #6b5d50;
+    --white: #ffffff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Martian Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    overflow-x: hidden;
+    text-align: left;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 60px;
+    background: rgba(250,248,245,0.94);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo-link { text-decoration: none; display: flex; align-items: center; }
+
+  .nav-links { display: flex; gap: 40px; list-style: none; }
+
+  .nav-links a {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+
+  .nav-cta {
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 8px 20px;
+    font-family: 'Martian Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+  .nav-cta:hover { background: var(--accent); color: var(--white); }
+
+  /* Hamburger */
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    padding: 4px;
+    background: none;
+    border: none;
+    z-index: 200;
+  }
+  .hamburger span {
+    display: block;
+    width: 24px;
+    height: 1.5px;
+    background: var(--text);
+    transition: all 0.3s ease;
+    transform-origin: center;
+  }
+  .hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+  .hamburger.open span:nth-child(2) { opacity: 0; }
+  .hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+  /* Mobile Drawer */
+  .mobile-drawer {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--white);
+    z-index: 150;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 36px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .mobile-drawer.open { opacity: 1; }
+  .mobile-drawer a {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 34px;
+    font-weight: 300;
+    color: var(--text);
+    text-decoration: none;
+    letter-spacing: 0.03em;
+    transition: color 0.2s;
+  }
+  .mobile-drawer a:hover { color: var(--accent); }
+  .mobile-drawer .drawer-cta {
+    font-family: 'Martian Mono', monospace;
+    font-size: 11px;
+    background: var(--accent);
+    color: var(--white);
+    padding: 14px 40px;
+    letter-spacing: 0.1em;
+    margin-top: 8px;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: stretch;
+    padding-top: 80px;
+    overflow: hidden;
+  }
+
+  .hero-left {
+    padding: 80px 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .hero-right {
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-right img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    filter: brightness(0.85) saturate(0.8);
+    display: block;
+  }
+  .hero-right::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, rgba(250,248,245,0.35) 0%, transparent 35%);
+  }
+
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--border);
+    padding: 6px 14px;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    margin-bottom: 40px;
+    animation: fadeUp 0.8s ease forwards;
+    background: var(--white);
+    width: fit-content;
+  }
+  .hero-tag::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%,100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .hero h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(40px, 4.5vw, 68px);
+    font-weight: 300;
+    line-height: 1.08;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    margin-bottom: 32px;
+    animation: fadeUp 0.8s 0.1s ease both;
+  }
+  .hero h1 em { font-style: italic; color: var(--accent); }
+
+  .hero-sub {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 2;
+    max-width: 480px;
+    margin-bottom: 48px;
+    animation: fadeUp 0.8s 0.2s ease both;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 16px;
+    animation: fadeUp 0.8s 0.3s ease both;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: var(--white);
+    border: none;
+    padding: 14px 32px;
+    font-family: 'Martian Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-primary:hover { background: #6e1c28; transform: translateY(-2px); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+    padding: 14px 32px;
+    font-family: 'Martian Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+  .hero-stats {
+    margin-top: 60px;
+    display: flex;
+    border-top: 1px solid var(--border);
+    padding-top: 32px;
+    animation: fadeUp 0.8s 0.4s ease both;
+  }
+
+  .stat-card {
+    padding-right: 32px;
+    margin-right: 32px;
+    border-right: 1px solid var(--border);
+  }
+  .stat-card:last-child { border-right: none; padding-right: 0; margin-right: 0; }
+
+  .stat-number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 36px;
+    font-weight: 400;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .stat-label {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* ── SHARED ── */
+  section { padding: 100px 60px; position: relative; }
+
+  .section-tag {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(32px, 4vw, 52px);
+    font-weight: 300;
+    color: var(--text);
+    line-height: 1.1;
+    margin-bottom: 24px;
+  }
+  .section-title em { font-style: italic; color: var(--accent); }
+
+  .section-body {
+    color: var(--text-dim);
+    max-width: 560px;
+    line-height: 2;
+    font-size: 13px;
+  }
+
+  .divider { width: 40px; height: 1px; background: var(--accent2); margin: 24px 0; }
+
+  /* ── PROBLEM ── */
+  .problem { background: #18110e; }
+  .problem .section-tag { color: var(--accent2); }
+  .problem .section-title { color: #f0e8dc; }
+  .problem .section-title em { color: var(--accent2); }
+  .problem .section-body { color: #7a6a5a; }
+  .problem .divider { background: var(--accent2); }
+
+  .problem-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .problem-items { display: flex; flex-direction: column; }
+
+  .problem-item {
+    display: flex;
+    gap: 20px;
+    padding: 24px 0;
+    border-bottom: 1px solid #2a1e16;
+    align-items: flex-start;
+  }
+  .problem-item:first-child { border-top: 1px solid #2a1e16; }
+
+  .problem-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    color: #3a2a1e;
+    font-weight: 300;
+    min-width: 36px;
+    line-height: 1;
+    margin-top: 2px;
+  }
+
+  .problem-text strong {
+    display: block;
+    color: #e0d4c4;
+    margin-bottom: 4px;
+    font-weight: 400;
+    font-size: 13px;
+  }
+  .problem-text span { color: #6a5a4a; font-size: 12px; }
+
+  /* ── ABOUT ── */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .credential-list { display: flex; flex-direction: column; gap: 12px; }
+
+  .credential {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    border: 1px solid var(--border);
+    background: var(--white);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .credential:hover { border-color: var(--accent2); box-shadow: 0 4px 20px rgba(138,37,53,0.06); }
+
+  .credential-icon {
+    width: 36px; height: 36px;
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; flex-shrink: 0;
+    color: var(--accent);
+  }
+  .credential-name { color: var(--text); font-size: 12px; }
+  .credential-desc { color: var(--muted); font-size: 11px; margin-top: 2px; }
+
+  /* ── SERVICES ── */
+  .services {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .services-header {
+    max-width: 1100px;
+    margin: 0 auto 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .service-card {
+    background: var(--white);
+    padding: 40px 32px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.2s;
+  }
+  .service-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    height: 2px; width: 0;
+    background: var(--accent);
+    transition: width 0.3s;
+  }
+  .service-card:hover::after { width: 100%; }
+
+  .service-icon { font-size: 22px; margin-bottom: 20px; display: block; color: var(--accent2); }
+  .service-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; color: var(--text); margin-bottom: 12px; }
+  .service-desc { font-size: 12px; color: var(--text-dim); line-height: 1.9; }
+
+  /* ── CONTACT ── */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    max-width: 1100px;
+    margin: 0 auto;
+    align-items: start;
+  }
+
+  .contact-form { display: flex; flex-direction: column; gap: 16px; }
+
+  .form-group { display: flex; flex-direction: column; gap: 8px; }
+
+  .form-label {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  .form-input {
+    background: var(--white);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 12px 16px;
+    font-family: 'Martian Mono', monospace;
+    font-size: 12px;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+  }
+  .form-input:focus { border-color: var(--accent); }
+  .form-input::placeholder { color: var(--muted); }
+  textarea.form-input { resize: vertical; min-height: 120px; }
+
+  .contact-detail { padding: 20px 0; border-bottom: 1px solid var(--border); }
+  .contact-detail:first-child { border-top: 1px solid var(--border); }
+  .contact-detail-label { font-size: 10px; letter-spacing: 0.15em; color: var(--accent); text-transform: uppercase; margin-bottom: 6px; }
+  .contact-detail-value { color: var(--text); font-size: 13px; }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 40px 60px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--white);
+  }
+  .footer-copy { font-size: 11px; color: var(--muted); letter-spacing: 0.05em; }
+  .footer-email a { font-size: 11px; color: var(--text-dim); text-decoration: none; letter-spacing: 0.05em; transition: color 0.2s; }
+  .footer-email a:hover { color: var(--accent); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .reveal { opacity: 0; transform: translateY(32px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── TABLET ── */
+  @media (max-width: 1024px) {
+    nav { padding: 18px 40px; }
+    .hero-left { padding: 80px 40px; }
+    section { padding: 80px 40px; }
+    footer { padding: 32px 40px; }
+    .services-header { padding: 0; }
+  }
+
+  /* ── MOBILE ── */
+  @media (max-width: 768px) {
+    /* Nav */
+    nav { padding: 16px 20px; }
+    .nav-links { display: none; }
+    .nav-cta { display: none; }
+    .hamburger { display: flex; }
+
+    /* Hero */
+    .hero { grid-template-columns: 1fr; min-height: auto; padding-top: 64px; }
+    .hero-right { order: -1; height: 55vw; min-height: 220px; max-height: 340px; }
+    .hero-right::after { background: linear-gradient(to bottom, transparent 50%, rgba(250,248,245,0.7) 100%); }
+    .hero-left { padding: 28px 20px 56px; }
+
+    .hero-tag { font-size: 9px; padding: 5px 10px; margin-bottom: 20px; }
+    .hero h1 { font-size: clamp(30px, 8vw, 44px); margin-bottom: 18px; line-height: 1.1; }
+    .hero-sub { font-size: 11px; margin-bottom: 28px; line-height: 1.85; max-width: 100%; }
+
+    .hero-actions { flex-direction: column; gap: 10px; }
+    .hero-actions a { text-align: center; width: 100%; }
+
+    .hero-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin-top: 36px; padding-top: 20px; }
+    .stat-card { padding-right: 0; margin-right: 0; border-right: 1px solid var(--border); text-align: center; padding: 0 8px; }
+    .stat-card:last-child { border-right: none; }
+    .stat-number { font-size: 26px; }
+    .stat-label { font-size: 8px; letter-spacing: 0.04em; line-height: 1.4; }
+
+    /* Sections */
+    section { padding: 52px 20px; }
+    .section-title { font-size: clamp(26px, 7vw, 38px); text-align: left; }
+    .section-body { font-size: 12px; max-width: 100%; line-height: 1.9; text-align: left; }
+
+    /* Problem */
+    .problem-grid { grid-template-columns: 1fr; gap: 36px; }
+    .problem-item { padding: 16px 0; gap: 14px; }
+    .problem-num { font-size: 20px; min-width: 26px; }
+    .problem-text strong { font-size: 12px; text-align: left; }
+    .problem-text span { font-size: 11px; text-align: left; display: block; }
+
+    /* About */
+    .about-grid { grid-template-columns: 1fr; gap: 32px; }
+    .credential { padding: 12px 14px; gap: 12px; }
+    .credential-icon { width: 30px; height: 30px; font-size: 12px; }
+    .credential-name { font-size: 11px; text-align: left; }
+    .credential-desc { font-size: 10px; text-align: left; }
+
+    /* Services */
+    .services-header { flex-direction: column; align-items: flex-start; gap: 16px; margin-bottom: 28px; }
+    .services-grid { grid-template-columns: 1fr; }
+    .service-card { padding: 24px 18px; }
+    .service-title { font-size: 20px; text-align: left; }
+    .service-desc { font-size: 11px; text-align: left; }
+
+    /* Contact */
+    .contact-grid { grid-template-columns: 1fr; gap: 36px; }
+    .contact-detail { padding: 14px 0; }
+    .contact-detail-value { font-size: 12px; text-align: left; }
+    .contact-detail-label { text-align: left; }
+    .form-label { text-align: left; }
+    .form-input { font-size: 13px; padding: 13px 14px; }
+    .btn-primary { width: 100%; text-align: center; display: block; padding: 14px; }
+
+    /* Footer */
+    footer { padding: 28px 20px; flex-direction: column; gap: 14px; text-align: center; }
+    .footer-logo svg { width: 110px; height: 26px; }
+  }
+
+  /* ── SMALL PHONES ── */
+  @media (max-width: 380px) {
+    .hero h1 { font-size: 28px; }
+    .hero-stats { grid-template-columns: 1fr; border-top: 1px solid var(--border); }
+    .stat-card { text-align: left; padding: 12px 0; border-right: none; border-bottom: 1px solid var(--border); }
+    .stat-card:last-child { border-bottom: none; }
+    .stat-number { font-size: 28px; }
+    .stat-label { font-size: 9px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo-link">
+    <svg width="168" height="42" viewBox="0 0 180 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <text x="0" y="36" font-family="Cormorant Garamond, serif" font-size="42" font-weight="300" fill="#1a1410" letter-spacing="-1">K</text>
+      <line x1="36" y1="4" x2="36" y2="40" stroke="#8a2535" stroke-width="0.8"/>
+      <text x="40" y="36" font-family="Cormorant Garamond, serif" font-size="42" font-weight="300" fill="#a8864a" letter-spacing="-1">G</text>
+      <text x="72" y="20" font-family="Martian Mono, monospace" font-size="7.5" font-weight="300" fill="#1a1410" letter-spacing="3">KOMERE</text>
+      <text x="72" y="34" font-family="Martian Mono, monospace" font-size="7.5" font-weight="300" fill="#8a2535" letter-spacing="3">GLISSADE</text>
+    </svg>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#problem">The Problem</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#services">What We Build</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a href="#contact" class="nav-cta">Request Demo</a>
+  <button class="hamburger" id="hamburger" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- MOBILE DRAWER -->
+<div class="mobile-drawer" id="mobileDrawer">
+  <a href="#problem" onclick="closeDrawer()">The Problem</a>
+  <a href="#about" onclick="closeDrawer()">About</a>
+  <a href="#services" onclick="closeDrawer()">What We Build</a>
+  <a href="#contact" onclick="closeDrawer()">Contact</a>
+  <a href="#contact" class="drawer-cta" onclick="closeDrawer()">Request Demo</a>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-tag">Clinical AI Systems · Atlanta, GA</div>
+    <h1>Where <em>clinical precision</em> meets intelligent automation</h1>
+    <p class="hero-sub">
+      Komereglissade builds AI-powered operational systems for healthcare, designed by engineers who understand both the clinical environment and the data infrastructure required to make automation reliable at scale.
+    </p>
+    <div class="hero-actions">
+      <a href="#contact" class="btn-primary">Request a Demo</a>
+      <a href="#problem" class="btn-ghost">See the Problem We Solve</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-card">
+        <div class="stat-number">$2K</div>
+        <div class="stat-label">Lost per OR delay minute</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">48h</div>
+        <div class="stat-label">Readiness window we own</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">6K+</div>
+        <div class="stat-label">ASCs in the US</div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div style="width:100%;height:100%;background:linear-gradient(135deg,#18110e 0%,#2a1a14 40%,#3a2520 70%,#1a0f0c 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;">
+      <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="40" cy="40" r="38" stroke="#8a2535" stroke-width="0.8" opacity="0.4"/>
+        <circle cx="40" cy="40" r="28" stroke="#a8864a" stroke-width="0.8" opacity="0.3"/>
+        <line x1="40" y1="10" x2="40" y2="70" stroke="#8a2535" stroke-width="0.6" opacity="0.5"/>
+        <line x1="10" y1="40" x2="70" y2="40" stroke="#8a2535" stroke-width="0.6" opacity="0.5"/>
+        <circle cx="40" cy="40" r="4" fill="#a8864a" opacity="0.7"/>
+      </svg>
+      <p style="font-family:'Martian Mono',monospace;font-size:9px;letter-spacing:0.2em;color:#5a3a28;text-transform:uppercase;text-align:center;line-height:2;">Clinical AI Systems<br>Komereglissade</p>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section class="problem" id="problem">
+  <div class="problem-grid">
+    <div class="reveal">
+      <div class="section-tag">The Problem</div>
+      <h2 class="section-title">Surgical cases fail for <em>operational</em> reasons, not clinical ones</h2>
+      <div class="divider"></div>
+      <p class="section-body">
+        Orthopedic and surgical centers performing implant-heavy procedures lose significant OR time every month to coordination failures that are entirely preventable. The problem is not clinical competence. It is a data and process problem that nobody with a technical background has properly solved.
+      </p>
+    </div>
+    <div class="reveal">
+      <div class="problem-items">
+        <div class="problem-item">
+          <div class="problem-num">01</div>
+          <div class="problem-text">
+            <strong>Vendor rep confirmation gaps</strong>
+            <span>Verbal confirmations with no paper trail. Reps go silent. Nobody escalates until the morning of surgery.</span>
+          </div>
+        </div>
+        <div class="problem-item">
+          <div class="problem-num">02</div>
+          <div class="problem-text">
+            <strong>Loaner tray sterilization failures</strong>
+            <span>Trays arrive too late for SPD to process. The case gets delayed or cancelled. It was preventable with 24 hours notice.</span>
+          </div>
+        </div>
+        <div class="problem-item">
+          <div class="problem-num">03</div>
+          <div class="problem-text">
+            <strong>Implant size and availability gaps</strong>
+            <span>Preference cards are not verified against actual inventory. The right size is not on site. The surgeon finds out in the OR.</span>
+          </div>
+        </div>
+        <div class="problem-item">
+          <div class="problem-num">04</div>
+          <div class="problem-text">
+            <strong>No single source of case readiness</strong>
+            <span>Coordination is split across texts, phone calls, and spreadsheets. Nobody has a live view of what is confirmed and what is not.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-grid">
+    <div class="reveal">
+      <div class="section-tag">Who We Are</div>
+      <h2 class="section-title">Built by engineers who speak <em>clinical and technical</em> fluently</h2>
+      <div class="divider"></div>
+      <p class="section-body">
+        Most healthtech companies hire clinicians to advise and engineers to build. At Komereglissade, those are the same person. Our founder brings a rare combination of Biomedical Engineering, AI systems, and database architecture, which means what we build works the way an OR actually works, not the way a software team thinks it does.
+      </p>
+      <br>
+      <p class="section-body">
+        We are based in Atlanta, Georgia and currently working with orthopedic and surgical centers to eliminate the coordination failures that cause preventable OR delays and cancellations.
+      </p>
+    </div>
+    <div class="reveal">
+      <div class="credential-list">
+        <div class="credential">
+          <div class="credential-icon">⊕</div>
+          <div>
+            <div class="credential-name">Biomedical Engineering</div>
+            <div class="credential-desc">Clinical workflow design · Implant systems · OR environment</div>
+          </div>
+        </div>
+        <div class="credential">
+          <div class="credential-icon">◈</div>
+          <div>
+            <div class="credential-name">AI Engineering</div>
+            <div class="credential-desc">Autonomous agent design · LLM systems · Workflow automation</div>
+          </div>
+        </div>
+        <div class="credential">
+          <div class="credential-icon">◫</div>
+          <div>
+            <div class="credential-name">Database Architecture</div>
+            <div class="credential-desc">HIPAA-compliant systems · EHR integration · Data pipelines</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="services" id="services">
+  <div class="services-header reveal">
+    <div>
+      <div class="section-tag">What We Build</div>
+      <h2 class="section-title">AI systems for <em>high-stakes</em> clinical operations</h2>
+    </div>
+    <a href="#contact" class="btn-ghost" style="white-space:nowrap">Start a Conversation</a>
+  </div>
+  <div class="services-grid reveal">
+    <div class="service-card">
+      <span class="service-icon">⊕</span>
+      <div class="service-title">Surgical Coordination</div>
+      <p class="service-desc">AI-powered case readiness systems that automate vendor confirmation, loaner tray tracking, and implant availability verification in the 48 hours before procedure day.</p>
+    </div>
+    <div class="service-card">
+      <span class="service-icon">◈</span>
+      <div class="service-title">Clinical Data Systems</div>
+      <p class="service-desc">HIPAA-compliant database architecture and data pipelines built for healthcare environments. EHR integration, structured reporting, and operational dashboards designed for clinical staff.</p>
+    </div>
+    <div class="service-card">
+      <span class="service-icon">◫</span>
+      <div class="service-title">Healthcare AI Agents</div>
+      <p class="service-desc">Custom AI agent development for operational healthcare workflows, from vendor coordination and clinical logistics to patient communication and scheduling automation.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-grid">
+    <div class="reveal">
+      <div class="section-tag">Get In Touch</div>
+      <h2 class="section-title">Let's talk about your <em>OR operations</em></h2>
+      <div class="divider"></div>
+      <p class="section-body">
+        If you are an orthopedic or surgical center dealing with case delays, vendor coordination headaches, or implant availability issues, we would like to understand your specific situation before showing you anything.
+      </p>
+      <div class="contact-info" style="margin-top:40px">
+        <div class="contact-detail">
+          <div class="contact-detail-label">Location</div>
+          <div class="contact-detail-value">Atlanta, Georgia</div>
+        </div>
+        <div class="contact-detail">
+          <div class="contact-detail-label">Focus Areas</div>
+          <div class="contact-detail-value">Orthopedic · Spine · Joint Replacement ASCs</div>
+        </div>
+        <div class="contact-detail">
+          <div class="contact-detail-label">Current Status</div>
+          <div class="contact-detail-value">Accepting pilot partners. Limited availability.</div>
+        </div>
+      </div>
+    </div>
+    <div class="reveal">
+      <form class="contact-form" name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" onsubmit="handleSubmit(event)">
+        <input type="hidden" name="form-name" value="contact">
+        <p style="display:none"><input name="bot-field"></p>
+        <div class="form-group">
+          <label class="form-label">Your Name</label>
+          <input type="text" name="name" class="form-input" placeholder="Dr. Jane Smith" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Organization</label>
+          <input type="text" name="organization" class="form-input" placeholder="Riverside Orthopedic ASC" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" name="email" class="form-input" placeholder="jane@yourpractice.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">What is your biggest OR coordination challenge?</label>
+          <textarea name="message" class="form-input" placeholder="Tell us what is breaking down in your pre-surgery workflow..."></textarea>
+        </div>
+        <button type="submit" class="btn-primary" style="margin-top:8px">Send Message</button>
+        <div id="form-success" style="display:none; color:var(--accent); font-size:12px; margin-top:12px;">
+          Message received. We will be in touch within 24 hours.
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- PRIVACY MODAL -->
+<div id="modal-privacy" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(26,20,16,0.7);backdrop-filter:blur(4px);overflow-y:auto;" onclick="if(event.target===this)closeModal('modal-privacy')">
+  <div style="background:var(--bg);max-width:720px;margin:60px auto;padding:60px;position:relative;border:1px solid var(--border);">
+    <button onclick="closeModal('modal-privacy')" style="position:absolute;top:24px;right:24px;background:none;border:none;cursor:pointer;font-family:'Martian Mono',monospace;font-size:11px;color:var(--text-dim);letter-spacing:0.1em;">✕ CLOSE</button>
+    <div style="font-family:'Martian Mono',monospace;font-size:10px;letter-spacing:0.2em;color:var(--accent2);margin-bottom:12px;">LEGAL</div>
+    <h2 style="font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;margin-bottom:6px;">Privacy Policy</h2>
+    <div style="font-family:'Martian Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.1em;margin-bottom:32px;">Last updated: March 2026</div>
+    <hr style="border:none;border-top:1px solid var(--border);margin-bottom:32px;">
+    <div style="font-size:13px;color:var(--text-dim);line-height:1.9;font-family:'Martian Mono',monospace;">
+      <p style="margin-bottom:16px;">Komoreglissade ("we," "us," or "our") operates the komoreglissade.com website and the CaseReady surgical coordination platform. This Privacy Policy explains how we collect, use, disclose, and protect information about you when you visit our website or use our services.</p>
+      <p style="font-size:11px;letter-spacing:0.12em;color:var(--accent);margin:24px 0 8px;text-transform:uppercase;">Information We Collect</p>
+      <p style="margin-bottom:16px;">We collect information you provide directly to us, including your name, professional title, organization name, business email address, and messages submitted through our contact form. We may also collect certain technical information automatically such as IP address, browser type, and pages visited.</p>
+      <p style="font-size:11px;letter-spacing:0.12em;color:var(--accent);margin:24px 0 8px;text-transform:uppercase;">How We Use Your Information</p>
+      <p style="margin-bottom:16px;">We use the information we collect to respond to your inquiries, schedule product demonstrations, send communications about our product and early access opportunities, and improve our services.</p>
+      <p style="font-size:11px;letter-spacing:0.12em;color:var(--accent);margin:24px 0 8px;text-transform:uppercase;">How We Share Your Information</p>
+      <p style="margin-bottom:16px;">We do not sell, trade, or rent your personal information to third parties. We may share information with trusted service providers who assist in operating our website and services, subject to confidentiality agreements.</p>
+      <p style="font-size:11px;letter-spacing:0.12em;color:var(--accent);margin:24px 0 8px;text-transform:uppercase;">Healthcare Data</p>
+      <p style="margin-bottom:16px;">Our CaseReady platform is designed for operational coordination at ambulatory surgery centers. To the extent our platform processes any protected health information (PHI), we comply with applicable HIPAA requirements and execute Business Associate Agreements (BAAs) with covered entity customers as required.</p>
+      <p style="font-size:11px;letter-spacing:0.12em;color:var(--accent);margin:24px 0 8px;text-transform:uppercase;">Data Security</p>
+      <p style="margin-bottom:16px;">We implement reasonable technical and organizational measures to protect your information against unauthorized access, alteration, or disclosure. No method of transmission over the Internet is 100% secure.</p>
+      <p style="font-size:11px;letter-spacing:0.12em;color:var(--accent);margin:24px 0 8px;text-transform:uppercase;">Changes to This Policy</p>
+      <p style="margin-bottom:16px;">We may update this Privacy Policy from time to time. Continued use of the site after updates constitutes acceptance of the revised policy.</p>
+      <p style="font-size:11px;letter-spacing:0.12em;color:var(--accent);margin:24px 0 8px;text-transform:uppercase;">Contact Us</p>
+      <p>For questions about this Privacy Policy, contact us at <a href="mailto:info@komoreglissade.com" style="color:var(--accent);">info@komoreglissade.com</a>.</p>
+    </div>
+  </div>
+</div>
+
+<!-- TERMS MODAL -->
+<div id="modal-terms" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(26,20,16,0.7);backdrop-filter:blur(4px);overflow-y:auto;" onclick="if(event.target===this)closeModal('modal-terms')">
+  <div style="background:var(--bg);max-width:720px;margin:60px auto;padding:60px;position:relative;border:1px solid var(--border);">
+    <button onclick="closeModal('modal-terms')" style="position:absolute;top:24px;right:24px;background:none;border:none;cursor:pointer;font-family:'Martian Mono',monospace;font-size:11px;color:var(--text-dim);letter-spacing:0.1em;">✕ CLOSE</button>
+    <div style="font-family:'Martian Mono',monospace;font-size:10px;letter-spacing:0.2em;color:var(--accent2);margin-bottom:12px;">LEGAL</div>
+    <h2 style="font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;margin-bottom:6px;">Terms of Use</h2>
+    <div style="font-family:'Martian Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.1em;margin-bottom:32px;">Last updated: March 2026</div>
+    <hr style="border:none;border-top:1px solid var(--border);margin-bottom:32px;">
+    <div style="font-size:13px;color:var(--text-dim);line-height:1.9;font-family:'Martian Mono',monospace;">
+      <p style="margin-bottom:16px;">Please read these Terms of Use carefully before using the komoreglissade.com website or any services provided by Komoreglissade. By accessing or using our website or services, you agree to be bound by these Terms.</p>
+      <p style="font-size:11px;letter-spacing:0.12em;color:var(--accent);margin:24px 0 8px;text-transform:uppercase;">1. Acceptance of Terms</p>
+      <p style="margin-bottom:16px;">By accessing our website or submitting information through our contact form, you confirm that you are at least 18 years old, have authority to enter into these Terms, and agree to be bound by them.</p>
+      <p style="font-size:11px;letter-spacing:0.12em;color:var(--accent);margin:24px 0 8px;text-transform:uppercase;">2. Description of Services</p>
+      <p style="margin-bottom:16px;">Komoreglissade provides AI-powered surgical coordination software ("CaseReady") designed to automate pre-surgery readiness workflows for ambulatory surgery centers.</p>
+      <p style="font-size:11px;letter-spacing:0.12em;color:var(--accent);margin:24px 0 8px;text-transform:uppercase;">3. Use of the Website</p>
+      <p style="margin-bottom:16px;">You agree to use this website only for lawful purposes. You may not use the site to transmit spam, attempt unauthorized access to any systems, scrape content with automated tools, or misrepresent your identity or affiliation.</p>
+      <p style="font-size:11px;letter-spacing:0.12em;color:var(--accent);margin:24px 0 8px;text-transform:uppercase;">4. Intellectual Property</p>
+      <p style="margin-bottom:16px;">All content on this website — including text, graphics, logos, and software — is the property of Komoreglissade or its licensors. The Komoreglissade name, K|G logo, and CaseReady product name are trademarks of Komoreglissade. Nothing on this site grants any license to use our trademarks.</p>
+      <p style="font-size:11px;letter-spacing:0.12em;color:var(--accent);margin:24px 0 8px;text-transform:uppercase;">5. No Medical Advice</p>
+      <p style="margin-bottom:16px;">Our services are designed for operational and administrative coordination purposes only. Nothing on this website constitutes medical advice or a substitute for the professional judgment of licensed healthcare providers. All clinical decisions remain the sole responsibility of qualified medical professionals.</p>
+      <p style="font-size:11px;letter-spacing:0.12em;color:var(--accent);margin:24px 0 8px;text-transform:uppercase;">6. Disclaimers</p>
+      <p style="margin-bottom:16px;">This website and its content are provided on an "as is" and "as available" basis without warranties of any kind. Komoreglissade reserves the right to modify or discontinue any aspect of the website at any time without notice.</p>
+      <p style="font-size:11px;letter-spacing:0.12em;color:var(--accent);margin:24px 0 8px;text-transform:uppercase;">7. Limitation of Liability</p>
+      <p style="margin-bottom:16px;">To the fullest extent permitted by applicable law, Komoreglissade shall not be liable for any indirect, incidental, or consequential damages arising from your use of this website or our services.</p>
+      <p style="font-size:11px;letter-spacing:0.12em;color:var(--accent);margin:24px 0 8px;text-transform:uppercase;">8. Governing Law</p>
+      <p style="margin-bottom:16px;">These Terms are governed by the laws of the State of Georgia, United States. Any disputes shall be subject to the exclusive jurisdiction of the courts located in Georgia.</p>
+      <p style="font-size:11px;letter-spacing:0.12em;color:var(--accent);margin:24px 0 8px;text-transform:uppercase;">9. Contact Us</p>
+      <p>For questions about these Terms, contact us at <a href="mailto:info@komoreglissade.com" style="color:var(--accent);">info@komoreglissade.com</a>.</p>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">
+    <svg width="140" height="34" viewBox="0 0 180 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <text x="0" y="36" font-family="Cormorant Garamond, serif" font-size="42" font-weight="300" fill="#b0a090" letter-spacing="-1">K</text>
+      <line x1="36" y1="4" x2="36" y2="40" stroke="#c8b8a0" stroke-width="0.8"/>
+      <text x="40" y="36" font-family="Cormorant Garamond, serif" font-size="42" font-weight="300" fill="#c8b8a0" letter-spacing="-1">G</text>
+      <text x="72" y="20" font-family="Martian Mono, monospace" font-size="7.5" font-weight="300" fill="#b0a090" letter-spacing="3">KOMERE</text>
+      <text x="72" y="34" font-family="Martian Mono, monospace" font-size="7.5" font-weight="300" fill="#c8b8a0" letter-spacing="3">GLISSADE</text>
+    </svg>
+  </div>
+  <div class="footer-copy">© 2026 Komereglissade. Clinical AI Systems. Atlanta, GA. All rights reserved.</div>
+  <div class="footer-email">
+    <a href="mailto:info@komereglissade.com">info@komereglissade.com</a>
+    &nbsp;·&nbsp;
+    <a href="#" onclick="openModal('modal-privacy');return false;">Privacy Policy</a>
+    &nbsp;·&nbsp;
+    <a href="#" onclick="openModal('modal-terms');return false;">Terms of Use</a>
+  </div>
+</footer>
+
+<script>
+  // Modal functions
+  function openModal(id) {
+    document.getElementById(id).style.display = 'block';
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal(id) {
+    document.getElementById(id).style.display = 'none';
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      closeModal('modal-privacy');
+      closeModal('modal-terms');
+    }
+  });
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 100);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+
+  // Form
+  function handleSubmit(e) {
+    e.preventDefault();
+    const form = e.target;
+    const data = new FormData(form);
+    fetch('/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams(data).toString()
+    })
+    .then(() => {
+      document.getElementById('form-success').style.display = 'block';
+      form.reset();
+    })
+    .catch(() => {
+      alert('Something went wrong. Please email us directly at info@komoreglissade.com');
+    });
+  }
+
+  // Hamburger
+  const hamburger = document.getElementById('hamburger');
+  const drawer = document.getElementById('mobileDrawer');
+
+  hamburger.addEventListener('click', () => {
+    if (drawer.classList.contains('open')) {
+      closeDrawer();
+    } else {
+      drawer.style.display = 'flex';
+      requestAnimationFrame(() => drawer.classList.add('open'));
+      hamburger.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+  });
+
+  function closeDrawer() {
+    drawer.classList.remove('open');
+    hamburger.classList.remove('open');
+    document.body.style.overflow = '';
+    setTimeout(() => { drawer.style.display = 'none'; }, 300);
+  }
+
+  // Close drawer when clicking outside
+  drawer.addEventListener('click', (e) => {
+    if (e.target === drawer) closeDrawer();
+  });
+</script>
+</body>
+</html>
