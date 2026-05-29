@@ -2,10 +2,21 @@ import json
 from pathlib import Path
 
 _DATA_PATH = Path(__file__).parent.parent / "data" / "sample_cases.json"
+_DB_PATH   = Path(__file__).parent.parent / "data" / "cases_db.json"
 
 
 def _load() -> dict:
-    return json.loads(_DATA_PATH.read_text())
+    # Load sample data
+    data = json.loads(_DATA_PATH.read_text())
+
+    # Merge any cases entered via the intake form
+    if _DB_PATH.exists():
+        db = json.loads(_DB_PATH.read_text())
+        data["cases"].extend(db.get("cases", []))
+        for key in ["vendor_status", "spd_status", "inventory_status", "preference_cards", "patient_prep"]:
+            data[key].update(db.get(key, {}))
+
+    return data
 
 
 def check_vendor_status(case_id: str) -> dict:

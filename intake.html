@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CaseReady · New Case Intake</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Martian+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #faf8f5; --surface: #f3efe8; --border: #e0d8cc;
+    --accent: #8a2535; --accent2: #a8864a; --muted: #b0a090;
+    --text: #1a1410; --text-dim: #6b5d50;
+    --ready: #1a6b3c; --ready-bg: #eaf7ef; --ready-border: #a8dfc0;
+    --risk-bg: #fff8e6; --risk-border: #f0d080; --risk: #7a5500;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); font-family: 'Martian Mono', monospace; font-size: 12px; color: var(--text); }
+
+  header {
+    background: #18110e; padding: 0 40px; height: 56px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .logo-text { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 300; color: #f0e8dc; }
+  .header-sub { font-size: 10px; letter-spacing: 0.15em; color: #7a6a5a; text-transform: uppercase; margin-left: 20px; padding-left: 20px; border-left: 1px solid #3a2a1e; }
+  .btn-back { font-size: 10px; letter-spacing: 0.1em; color: #5a4a3a; text-decoration: none; text-transform: uppercase; transition: color 0.2s; }
+  .btn-back:hover { color: #a8864a; }
+
+  .page { max-width: 900px; margin: 0 auto; padding: 32px 40px 60px; }
+
+  .page-title { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 300; color: var(--text); margin-bottom: 6px; }
+  .page-sub { font-size: 11px; color: var(--muted); letter-spacing: 0.05em; margin-bottom: 32px; }
+
+  /* Progress bar */
+  .progress { display: flex; gap: 0; margin-bottom: 36px; border: 1px solid var(--border); overflow: hidden; }
+  .progress-step {
+    flex: 1; padding: 10px 16px; font-size: 9px; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--muted); background: white;
+    border-right: 1px solid var(--border); cursor: pointer; transition: all 0.2s;
+  }
+  .progress-step:last-child { border-right: none; }
+  .progress-step.active { background: #18110e; color: #a8864a; }
+  .progress-step.done { background: var(--ready-bg); color: var(--ready); }
+  .progress-num { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 300; display: block; margin-bottom: 2px; }
+
+  /* Sections */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  .section-title { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 300; color: var(--text); margin-bottom: 4px; }
+  .section-sub { font-size: 11px; color: var(--muted); margin-bottom: 24px; }
+
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+  .form-grid.full { grid-template-columns: 1fr; }
+
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field.span2 { grid-column: span 2; }
+  .field.span3 { grid-column: span 3; }
+
+  label { font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-dim); }
+  label .req { color: var(--accent); }
+
+  input, select, textarea {
+    background: white; border: 1px solid var(--border); color: var(--text);
+    padding: 10px 14px; font-family: 'Martian Mono', monospace; font-size: 12px;
+    outline: none; transition: border-color 0.2s; width: 100%;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+  input::placeholder, textarea::placeholder { color: var(--muted); }
+  textarea { resize: vertical; min-height: 80px; }
+  select { cursor: pointer; }
+
+  .toggle-row { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: white; border: 1px solid var(--border); }
+  .toggle-row label { font-size: 11px; letter-spacing: 0.05em; text-transform: none; color: var(--text); cursor: pointer; flex: 1; margin: 0; }
+  input[type="checkbox"] { width: 16px; height: 16px; flex-shrink: 0; cursor: pointer; accent-color: var(--accent); }
+
+  .divider { height: 1px; background: var(--border); margin: 24px 0; }
+
+  .field-note { font-size: 10px; color: var(--muted); margin-top: 2px; font-style: italic; }
+
+  /* Status callout */
+  .status-callout {
+    padding: 14px 18px; border-left: 3px solid var(--accent2);
+    background: var(--surface); margin-bottom: 20px; font-size: 11px;
+    color: var(--text-dim); line-height: 1.8;
+  }
+
+  /* Navigation */
+  .nav-row { display: flex; justify-content: space-between; align-items: center; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border); }
+  .btn {
+    padding: 12px 28px; font-family: 'Martian Mono', monospace; font-size: 10px;
+    letter-spacing: 0.1em; cursor: pointer; transition: all 0.2s; border: none;
+  }
+  .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text-dim); }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-primary:hover { background: #6e1c28; }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-success { background: var(--ready); color: white; }
+
+  /* Success panel */
+  .success-panel { display: none; text-align: center; padding: 48px 40px; }
+  .success-icon { font-size: 48px; margin-bottom: 16px; color: var(--ready); }
+  .success-title { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 300; color: var(--text); margin-bottom: 8px; }
+  .success-case-id { font-size: 13px; color: var(--accent2); letter-spacing: 0.1em; margin-bottom: 24px; background: var(--surface); padding: 12px 20px; display: inline-block; border: 1px solid var(--border); }
+  .success-sub { font-size: 11px; color: var(--muted); line-height: 2; max-width: 500px; margin: 0 auto 28px; }
+  .success-actions { display: flex; gap: 12px; justify-content: center; }
+
+  /* Error */
+  .error-msg { background: #fdeaea; border: 1px solid #f0a0a0; padding: 12px 16px; font-size: 11px; color: #8a1515; margin-top: 12px; display: none; }
+</style>
+</head>
+<body>
+
+<header>
+  <div style="display:flex;align-items:center">
+    <span class="logo-text">CaseReady</span>
+    <span class="header-sub">New Case Intake</span>
+  </div>
+  <a href="dashboard.html" class="btn-back">← Back to Dashboard</a>
+</header>
+
+<div class="page">
+  <div class="page-title">New surgical case.</div>
+  <div class="page-sub">Fill in all five sections. The agent will generate a readiness brief as soon as the case is submitted.</div>
+
+  <div class="progress" id="progressBar">
+    <div class="progress-step active" onclick="goTo(0)"><span class="progress-num">1</span>Case & OR</div>
+    <div class="progress-step" onclick="goTo(1)"><span class="progress-num">2</span>Implant & Vendor</div>
+    <div class="progress-step" onclick="goTo(2)"><span class="progress-num">3</span>SPD & Inventory</div>
+    <div class="progress-step" onclick="goTo(3)"><span class="progress-num">4</span>Preference & Patient</div>
+    <div class="progress-step" onclick="goTo(4)"><span class="progress-num">5</span>Review & Submit</div>
+  </div>
+
+  <div id="formBody">
+
+    <!-- SECTION 1 — Case & OR -->
+    <div class="section active" id="section-0">
+      <div class="section-title">Case & OR details</div>
+      <div class="section-sub">Basic scheduling information. This is the top-level record the coordinator sees on the morning view.</div>
+      <div class="form-grid three">
+        <div class="field">
+          <label>OR Date <span class="req">*</span></label>
+          <input type="date" id="scheduled_date" required>
+        </div>
+        <div class="field">
+          <label>OR Room <span class="req">*</span></label>
+          <select id="or_room">
+            <option value="">Select room...</option>
+            <option>OR-1</option><option>OR-2</option><option>OR-3</option>
+            <option>OR-4</option><option>OR-5</option><option>OR-6</option>
+            <option>OR-7</option><option>OR-8</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>OR Time <span class="req">*</span></label>
+          <input type="time" id="or_time" required>
+        </div>
+        <div class="field">
+          <label>Est. Duration (minutes)</label>
+          <input type="number" id="estimated_duration_min" value="90" min="15" max="600">
+        </div>
+        <div class="field">
+          <label>Patient Initials <span class="req">*</span></label>
+          <input type="text" id="patient_name" placeholder="e.g. Margaret T." required>
+          <span class="field-note">Initials only — no full names until BAA is signed</span>
+        </div>
+        <div class="field">
+          <label>ASA Class <span class="req">*</span></label>
+          <select id="asa_class">
+            <option value="">Select...</option>
+            <option value="I">I — Healthy patient</option>
+            <option value="II">II — Mild systemic disease</option>
+            <option value="III">III — Severe systemic disease</option>
+            <option value="IV">IV — Life-threatening disease</option>
+          </select>
+        </div>
+        <div class="field span2">
+          <label>Procedure Type <span class="req">*</span></label>
+          <input type="text" id="procedure_type" placeholder="e.g. Total Knee Arthroplasty" required>
+        </div>
+        <div class="field">
+          <label>Laterality</label>
+          <select id="laterality">
+            <option value="N/A">N/A</option>
+            <option value="Left">Left</option>
+            <option value="Right">Right</option>
+            <option value="Bilateral">Bilateral</option>
+          </select>
+        </div>
+        <div class="field span2">
+          <label>Surgeon Full Name <span class="req">*</span></label>
+          <input type="text" id="surgeon_name" placeholder="e.g. Dr. Priya Patel" required>
+        </div>
+        <div class="field">
+          <label>CPT Code</label>
+          <input type="text" id="cpt_code" placeholder="e.g. 27447">
+        </div>
+        <div class="field span2">
+          <label>Anesthesia Type <span class="req">*</span></label>
+          <select id="anesthesia_type">
+            <option value="">Select...</option>
+            <option>General</option>
+            <option>Spinal + MAC</option>
+            <option>Regional</option>
+            <option>MAC only</option>
+            <option>Local</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Anesthesia Provider</label>
+          <input type="text" id="anesthesia_provider" placeholder="e.g. Dr. Ana Reyes, CRNA">
+        </div>
+      </div>
+      <div class="nav-row">
+        <span></span>
+        <button class="btn btn-primary" onclick="next(0)">Next: Implant & Vendor →</button>
+      </div>
+    </div>
+
+    <!-- SECTION 2 — Implant & Vendor -->
+    <div class="section" id="section-1">
+      <div class="section-title">Implant system & vendor</div>
+      <div class="section-sub">The implant rep is responsible for confirming components and being present day-of. Missing rep confirmation is the #1 cause of case delays.</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Manufacturer <span class="req">*</span></label>
+          <select id="manufacturer">
+            <option value="">Select...</option>
+            <option>Zimmer Biomet</option>
+            <option>Medtronic</option>
+            <option>DePuy Synthes</option>
+            <option>Arthrex</option>
+            <option>Stryker</option>
+            <option>Smith & Nephew</option>
+            <option>NuVasive</option>
+            <option>Globus Medical</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Implant System Name <span class="req">*</span></label>
+          <input type="text" id="implant_system" placeholder="e.g. Persona Knee System">
+        </div>
+        <div class="field">
+          <label>Rep Name <span class="req">*</span></label>
+          <input type="text" id="rep_name" placeholder="e.g. Kyle Marsh">
+        </div>
+        <div class="field">
+          <label>Rep Phone</label>
+          <input type="tel" id="rep_phone" placeholder="e.g. 404-555-0192">
+        </div>
+        <div class="field span2">
+          <label>Component Sizes</label>
+          <textarea id="component_sizes" placeholder="e.g. Femur: Size 5, Tibia: Size 4, Poly Insert: 10mm, Patellar Button: 35mm"></textarea>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <div class="section-title" style="font-size:18px;margin-bottom:4px">Vendor confirmation status</div>
+      <div class="section-sub">Has the rep confirmed all components and their day-of presence?</div>
+
+      <div class="form-grid">
+        <div class="field">
+          <div class="toggle-row">
+            <input type="checkbox" id="vendor_confirmed">
+            <label for="vendor_confirmed">Rep has confirmed</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Confirmation Method</label>
+          <select id="vendor_confirmation_method">
+            <option value="">Not yet confirmed</option>
+            <option value="email">Email</option>
+            <option value="phone">Phone call</option>
+            <option value="in-person">In person</option>
+            <option value="text">Text message</option>
+          </select>
+        </div>
+        <div class="field span2">
+          <label>Vendor Notes</label>
+          <textarea id="vendor_notes" placeholder="e.g. Kyle confirmed all components in transit, ETA 05:30 day-of" style="min-height:60px"></textarea>
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <button class="btn btn-ghost" onclick="prev(1)">← Back</button>
+        <button class="btn btn-primary" onclick="next(1)">Next: SPD & Inventory →</button>
+      </div>
+    </div>
+
+    <!-- SECTION 3 — SPD & Inventory -->
+    <div class="section" id="section-2">
+      <div class="section-title">Loaner trays & inventory</div>
+      <div class="section-sub">Loaner trays must arrive at SPD with enough time to be sterilized before the OR start. Late trays are the #2 cause of delays.</div>
+
+      <div class="form-grid">
+        <div class="field span2">
+          <label>Loaner Tray IDs <span class="req">*</span></label>
+          <input type="text" id="tray_ids" placeholder="e.g. ZB-PERSONA-F5, ZB-PERSONA-T4, ZB-TRIALS (comma separated)">
+        </div>
+        <div class="field">
+          <label>Trays Required By (SPD deadline)</label>
+          <input type="datetime-local" id="trays_required_by">
+          <span class="field-note">Usually the day before the case by 4:00 PM</span>
+        </div>
+        <div class="field">
+          <label>SPD Processor Unit</label>
+          <input type="text" id="spd_processor" placeholder="e.g. Central Sterile - Unit B">
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <div class="section-title" style="font-size:18px;margin-bottom:4px">Sterilization status</div>
+      <div class="form-grid">
+        <div class="field">
+          <div class="toggle-row">
+            <input type="checkbox" id="trays_received">
+            <label for="trays_received">Trays received by SPD</label>
+          </div>
+        </div>
+        <div class="field">
+          <div class="toggle-row">
+            <input type="checkbox" id="sterilization_complete">
+            <label for="sterilization_complete">Sterilization complete</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <div class="section-title" style="font-size:18px;margin-bottom:4px">Implant inventory verification</div>
+      <div class="form-grid">
+        <div class="field">
+          <div class="toggle-row">
+            <input type="checkbox" id="inventory_verified">
+            <label for="inventory_verified">All components verified on-site</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Verified By</label>
+          <input type="text" id="inventory_verified_by" placeholder="e.g. Lisa Monroe, RN">
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <button class="btn btn-ghost" onclick="prev(2)">← Back</button>
+        <button class="btn btn-primary" onclick="next(2)">Next: Preference & Patient →</button>
+      </div>
+    </div>
+
+    <!-- SECTION 4 — Preference Card & Patient Prep -->
+    <div class="section" id="section-3">
+      <div class="section-title">Preference card & patient prep</div>
+      <div class="section-sub">The surgeon's preference card must be verified against this specific case — not just confirmed to exist. Patient prep flags must be resolved before the patient enters the OR.</div>
+
+      <div class="form-grid">
+        <div class="field">
+          <div class="toggle-row">
+            <input type="checkbox" id="pref_card_verified">
+            <label for="pref_card_verified">Preference card verified for this case</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Verified By</label>
+          <input type="text" id="pref_card_verified_by" placeholder="e.g. Amanda Torres, CST">
+        </div>
+        <div class="field span2">
+          <label>Special Requests (comma separated)</label>
+          <input type="text" id="pref_card_special_requests" placeholder="e.g. Tourniquet at 300mmHg, Pulse lavage before cementing">
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <div class="section-title" style="font-size:18px;margin-bottom:4px">Patient pre-op checklist</div>
+
+      <div class="form-grid">
+        <div class="field">
+          <div class="toggle-row"><input type="checkbox" id="pre_op_complete"><label for="pre_op_complete">Pre-op complete</label></div>
+        </div>
+        <div class="field">
+          <div class="toggle-row"><input type="checkbox" id="consents_signed"><label for="consents_signed">Consents signed</label></div>
+        </div>
+        <div class="field">
+          <div class="toggle-row"><input type="checkbox" id="h_and_p_within_30_days"><label for="h_and_p_within_30_days">H&P within 30 days</label></div>
+        </div>
+        <div class="field">
+          <div class="toggle-row"><input type="checkbox" id="npo_confirmed"><label for="npo_confirmed">NPO confirmed</label></div>
+        </div>
+        <div class="field">
+          <div class="toggle-row"><input type="checkbox" id="labs_reviewed"><label for="labs_reviewed">Labs reviewed</label></div>
+        </div>
+        <div class="field">
+          <div class="toggle-row"><input type="checkbox" id="imaging_available"><label for="imaging_available">Imaging available in OR</label></div>
+        </div>
+        <div class="field">
+          <div class="toggle-row"><input type="checkbox" id="allergies_flagged"><label for="allergies_flagged">Allergies flagged</label></div>
+        </div>
+        <div class="field span2">
+          <label>Outstanding flags or notes (comma separated)</label>
+          <input type="text" id="prep_flags" placeholder="e.g. Cardiology clearance pending, Blood type and screen needed">
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <button class="btn btn-ghost" onclick="prev(3)">← Back</button>
+        <button class="btn btn-primary" onclick="next(3)">Review & Submit →</button>
+      </div>
+    </div>
+
+    <!-- SECTION 5 — Review -->
+    <div class="section" id="section-4">
+      <div class="section-title">Review & submit</div>
+      <div class="section-sub">Confirm the details below before submitting. The agent will generate a readiness brief immediately after submission.</div>
+
+      <div id="reviewPanel" style="background:white;border:1px solid var(--border);padding:24px;margin-bottom:24px;font-size:12px;line-height:2;color:var(--text-dim)"></div>
+
+      <div class="status-callout">
+        Once submitted, this case will appear on the <strong style="color:var(--text)">coordinator dashboard</strong> and the agent will automatically assess all 5 readiness dimensions based on the information you entered. You can re-run the brief at any time using the Refresh button on the dashboard.
+      </div>
+
+      <div class="error-msg" id="errorMsg"></div>
+
+      <div class="nav-row">
+        <button class="btn btn-ghost" onclick="prev(4)">← Back</button>
+        <button class="btn btn-primary" id="submitBtn" onclick="submitCase()">Submit Case & Generate Brief</button>
+      </div>
+    </div>
+
+  </div><!-- end formBody -->
+
+  <!-- SUCCESS -->
+  <div class="success-panel" id="successPanel">
+    <div class="success-icon">✓</div>
+    <div class="success-title">Case submitted.</div>
+    <div class="success-case-id" id="newCaseId">CR-2026-...</div>
+    <div class="success-sub">The readiness brief has been generated. Open the dashboard to see the full coordinator view with this case included.</div>
+    <div class="success-actions">
+      <a href="dashboard.html"><button class="btn btn-primary">Open Dashboard</button></a>
+      <button class="btn btn-ghost" onclick="resetForm()">Enter Another Case</button>
+    </div>
+  </div>
+
+</div><!-- end page -->
+
+<script>
+  const API_BASE = "https://ezsspeeaair46nqlxblyqkndle0rxoju.lambda-url.us-east-1.on.aws";
+  const API_KEY  = "Y8a1GjW0lXpRJwcDOtzCugysP67on3Z4";
+  const headers  = { "X-API-Key": API_KEY, "Content-Type": "application/json" };
+
+  let currentSection = 0;
+  const totalSections = 5;
+
+  function goTo(n) {
+    document.querySelectorAll(".section").forEach((s, i) => s.classList.toggle("active", i === n));
+    document.querySelectorAll(".progress-step").forEach((s, i) => {
+      s.classList.toggle("active", i === n);
+      s.classList.toggle("done", i < n);
+    });
+    currentSection = n;
+    window.scrollTo(0, 0);
+    if (n === 4) buildReview();
+  }
+
+  function next(from) {
+    if (!validateSection(from)) return;
+    goTo(from + 1);
+  }
+
+  function prev(from) { goTo(from - 1); }
+
+  function validateSection(n) {
+    const required = {
+      0: ["scheduled_date","or_room","or_time","patient_name","asa_class","procedure_type","surgeon_name","anesthesia_type"],
+      1: ["manufacturer","implant_system","rep_name"],
+      2: ["tray_ids"],
+      3: [],
+      4: [],
+    };
+    for (const id of (required[n] || [])) {
+      const el = document.getElementById(id);
+      if (!el || !el.value.trim()) {
+        el?.focus();
+        el?.style && (el.style.borderColor = "#8a2535");
+        setTimeout(() => el && (el.style.borderColor = ""), 2000);
+        return false;
+      }
+    }
+    return true;
+  }
+
+  function val(id) {
+    const el = document.getElementById(id);
+    if (!el) return "";
+    return el.type === "checkbox" ? el.checked : el.value;
+  }
+
+  function buildReview() {
+    const panel = document.getElementById("reviewPanel");
+    const rows = [
+      ["Date", val("scheduled_date")],
+      ["OR Room", val("or_room")],
+      ["OR Time", val("or_time")],
+      ["Patient", val("patient_name") + " — ASA " + val("asa_class")],
+      ["Procedure", val("procedure_type") + " (" + val("laterality") + ")"],
+      ["Surgeon", val("surgeon_name")],
+      ["Anesthesia", val("anesthesia_type") + " — " + (val("anesthesia_provider") || "TBD")],
+      ["Implant", val("manufacturer") + " / " + val("implant_system")],
+      ["Rep", val("rep_name") + " — " + (val("rep_phone") || "no phone")],
+      ["Vendor confirmed", val("vendor_confirmed") ? "✓ Yes (" + val("vendor_confirmation_method") + ")" : "✗ Not yet"],
+      ["Trays received", val("trays_received") ? "✓ Yes" : "✗ No"],
+      ["Sterilization", val("sterilization_complete") ? "✓ Complete" : "✗ Not complete"],
+      ["Inventory verified", val("inventory_verified") ? "✓ Yes" : "✗ No"],
+      ["Preference card", val("pref_card_verified") ? "✓ Verified" : "✗ Not verified"],
+      ["Consents signed", val("consents_signed") ? "✓" : "✗"],
+      ["Labs reviewed", val("labs_reviewed") ? "✓" : "✗"],
+      ["NPO confirmed", val("npo_confirmed") ? "✓" : "✗"],
+    ];
+    panel.innerHTML = rows.map(([k, v]) =>
+      `<div style="display:flex;gap:16px;border-bottom:1px solid var(--border);padding:4px 0">
+        <span style="min-width:160px;color:var(--muted);font-size:10px;letter-spacing:0.1em;text-transform:uppercase">${k}</span>
+        <span style="color:var(--text)">${v}</span>
+      </div>`
+    ).join("");
+  }
+
+  function collectFormData() {
+    return {
+      scheduled_date: val("scheduled_date"),
+      or_room: val("or_room"),
+      or_time: val("or_time"),
+      estimated_duration_min: parseInt(val("estimated_duration_min")) || 90,
+      patient_name: val("patient_name"),
+      asa_class: val("asa_class"),
+      procedure_type: val("procedure_type"),
+      laterality: val("laterality"),
+      cpt_code: val("cpt_code"),
+      surgeon_name: val("surgeon_name"),
+      manufacturer: val("manufacturer"),
+      implant_system: val("implant_system"),
+      rep_name: val("rep_name"),
+      rep_phone: val("rep_phone"),
+      component_sizes: val("component_sizes"),
+      tray_ids: val("tray_ids"),
+      trays_required_by: val("trays_required_by"),
+      spd_processor: val("spd_processor"),
+      anesthesia_type: val("anesthesia_type"),
+      anesthesia_provider: val("anesthesia_provider"),
+      vendor_confirmed: val("vendor_confirmed"),
+      vendor_confirmation_method: val("vendor_confirmation_method") || null,
+      vendor_notes: val("vendor_notes"),
+      trays_received: val("trays_received"),
+      sterilization_complete: val("sterilization_complete"),
+      inventory_verified: val("inventory_verified"),
+      inventory_verified_by: val("inventory_verified_by"),
+      pref_card_verified: val("pref_card_verified"),
+      pref_card_verified_by: val("pref_card_verified_by"),
+      pref_card_special_requests: val("pref_card_special_requests"),
+      pre_op_complete: val("pre_op_complete"),
+      consents_signed: val("consents_signed"),
+      h_and_p_within_30_days: val("h_and_p_within_30_days"),
+      npo_confirmed: val("npo_confirmed"),
+      labs_reviewed: val("labs_reviewed"),
+      imaging_available: val("imaging_available"),
+      allergies_flagged: val("allergies_flagged"),
+      prep_flags: val("prep_flags"),
+    };
+  }
+
+  async function submitCase() {
+    const btn = document.getElementById("submitBtn");
+    const errEl = document.getElementById("errorMsg");
+    btn.disabled = true;
+    btn.textContent = "Submitting...";
+    errEl.style.display = "none";
+
+    const data = collectFormData();
+
+    try {
+      const res = await fetch(`${API_BASE}/cases`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(data),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.detail || "Submission failed");
+      }
+
+      const result = await res.json();
+      const caseId = result.case_id;
+
+      // Kick off brief generation (fire and forget — dashboard will show it)
+      fetch(`${API_BASE}/brief/${caseId}`, { method: "POST", headers }).catch(() => {});
+
+      document.getElementById("newCaseId").textContent = caseId;
+      document.getElementById("formBody").style.display = "none";
+      document.getElementById("progressBar").style.display = "none";
+      document.querySelector(".page-title").style.display = "none";
+      document.querySelector(".page-sub").style.display = "none";
+      document.getElementById("successPanel").style.display = "block";
+
+    } catch (e) {
+      errEl.textContent = `Could not submit: ${e.message}. Make sure you are running the local server (python -m uvicorn api.main:app --reload) or connected to the live API.`;
+      errEl.style.display = "block";
+      btn.disabled = false;
+      btn.textContent = "Submit Case & Generate Brief";
+    }
+  }
+
+  function resetForm() {
+    document.getElementById("formBody").style.display = "block";
+    document.getElementById("progressBar").style.display = "flex";
+    document.querySelector(".page-title").style.display = "block";
+    document.querySelector(".page-sub").style.display = "block";
+    document.getElementById("successPanel").style.display = "none";
+    document.querySelectorAll("input:not([type=checkbox])").forEach(el => el.value = "");
+    document.querySelectorAll("select").forEach(el => el.selectedIndex = 0);
+    document.querySelectorAll("textarea").forEach(el => el.value = "");
+    document.querySelectorAll("input[type=checkbox]").forEach(el => el.checked = false);
+    document.getElementById("estimated_duration_min").value = "90";
+    goTo(0);
+  }
+
+  // Set default date to tomorrow
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  document.getElementById("scheduled_date").value = tomorrow.toISOString().split("T")[0];
+</script>
+</body>
+</html>
