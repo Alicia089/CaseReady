@@ -91,7 +91,6 @@ python -m agent.case_agent --case CR-2026-0841 --json
 
 ```
 CaseReady/
-  index.html              ← Komereglissade marketing site (Netlify-deployable)
   agent/
     case_agent.py         ← Claude agentic loop with tool use
     tools.py              ← Five readiness check tools + tool definitions
